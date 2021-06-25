@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28922.388
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SvgMandalaGeneration", "SvgMandalaGeneration\SvgMandalaGeneration.csproj", "{4A622A03-8A83-4891-B315-67E6B3294B90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlagGeneration", "FlagGeneration\FlagGeneration.csproj", "{9C8ABB5C-59FE-494A-ABB5-DF08F8631CED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4A622A03-8A83-4891-B315-67E6B3294B90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A622A03-8A83-4891-B315-67E6B3294B90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A622A03-8A83-4891-B315-67E6B3294B90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A622A03-8A83-4891-B315-67E6B3294B90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C8ABB5C-59FE-494A-ABB5-DF08F8631CED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C8ABB5C-59FE-494A-ABB5-DF08F8631CED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C8ABB5C-59FE-494A-ABB5-DF08F8631CED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C8ABB5C-59FE-494A-ABB5-DF08F8631CED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C1960D58-0FC4-4566-BDA4-D441A433DE8D}
+	EndGlobalSection
+EndGlobal

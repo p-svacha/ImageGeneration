@@ -1,0 +1,34 @@
+﻿<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="800" Width="800" WindowState="Maximized">
+    <Border Name="MainBorder" Padding="10" Background="#bbbbbb">
+        <Grid Margin="0 0 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Name="FlagRow" Width="500"/>
+                <ColumnDefinition Name="SidebarRow" Width="1100"/>
+            </Grid.ColumnDefinitions>
+            <Grid Margin="0 0 0 0" Grid.Column="0" Grid.Row="0" Name="SideGrid">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="500"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="500"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Row="0" Grid.Column="0" Content="Generate Mandala" Click="GenerateFlag_Click" HorizontalAlignment="Left"></Button>
+                <Grid Grid.Row="1" Grid.Column="0" Name="ElementGrid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="400"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
+                </Grid>
+            </Grid>
+            
+            <DockPanel Grid.Column="1" Name="FlagPanel" Margin="0 0 0 0" MouseWheel="FlagPanel_MouseWheel" MouseMove="FlagPanel_MouseMove" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Grid>
+    </Border>
+</Window>
