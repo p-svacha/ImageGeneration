@@ -62,6 +62,7 @@
     <Compile Include="Scripts\Patterns\ScatteredStripesAndSymbols.cs" />
     <Compile Include="Scripts\Patterns\NordicCross.cs" />
     <Compile Include="Scripts\Patterns\Diagonal.cs" />
+    <Compile Include="Scripts\Symbol\Cross.cs" />
     <Compile Include="Scripts\Symbol\Circle.cs" />
     <Compile Include="Scripts\Symbol\Special_Star.cs" />
     <Compile Include="Scripts\Symbol\Default_Star.cs" />

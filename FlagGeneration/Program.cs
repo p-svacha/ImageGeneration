@@ -34,14 +34,17 @@ namespace FlagGeneration
             if (!SavePath.EndsWith(".png") && intParam > 0) // Generate multiple
             {
                 int numFlags = intParam;
-                System.Console.WriteLine("Generating " + numFlags + " random flags");
+                System.Console.WriteLine("Generating " + numFlags + " random flags:");
 
                 if (intParam > 10) intParam = 10;
                 for(int i = 0; i < intParam; i++)
                 {
+                    string fileName = i + ".png";
                     int seed = seedRng.Next(Int32.MinValue, Int32.MaxValue);
+                    System.Console.WriteLine(fileName + " with seed " + seed);
+
                     SvgDocument Svg = Gen.GenerateFlag(seed);
-                    Svg.Draw().Save(SavePath + "seed_" + seed + ".png");
+                    Svg.Draw().Save(SavePath + fileName);
                 }
             }
 

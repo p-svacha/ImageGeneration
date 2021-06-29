@@ -39,7 +39,7 @@ namespace FlagGeneration
         private bool HalfStar;
         private bool HalfStarMoved;
 
-        public Special_Star(Random R) : base(R)
+        public Special_Star(FlagMainPattern flag, Random R) : base(flag, R)
         {
             NumSpikes = GetNumSpikes(R);
             RadiusRatio = RandomRange(MIN_RADIUS_RATIO, MAX_RADIUS_RATIO);
@@ -47,7 +47,7 @@ namespace FlagGeneration
             HalfStarMoved = R.NextDouble() < 0.5f;
         }
 
-        public override void Draw(SvgDocument Svg, FlagMainPattern flag, Vector2 center, float size, float angle, Color c)
+        public override void Draw(SvgDocument Svg, Vector2 center, float size, float angle, Color primaryColor, Color secondaryColor)
         {
             float startAngle = angle + 180;
             float outerRadius = size * 0.5f;
@@ -86,8 +86,25 @@ namespace FlagGeneration
                     vertices[i] = new Vector2(x, y);
                 }
             }
+            Flag.DrawPolygon(Svg, vertices, primaryColor);
 
-            flag.DrawPolygon(Svg, vertices, c);
+            if (HasFrame && !HalfStar && RadiusRatio > 0.3f)
+            {
+                float angleStep = 360f / numVertices;
+                float framedOuterRadius = outerRadius * FrameWidth;
+                float framedInnerRadius = innerRadius * FrameWidth;
+                Vector2[] framedVertices = new Vector2[numVertices];
+                for (int i = 0; i < numVertices; i++)
+                {
+                    float curAngle = startAngle + (i * angleStep);
+                    bool outerCorner = i % 2 == 0;
+                    float radius = outerCorner ? framedOuterRadius : framedInnerRadius;
+                    float x = center.X + (float)(radius * Math.Sin(DegreeToRadian(curAngle)));
+                    float y = center.Y + (float)(radius * Math.Cos(DegreeToRadian(curAngle)));
+                    framedVertices[i] = new Vector2(x, y);
+                }
+                Flag.DrawPolygon(Svg, framedVertices, secondaryColor);
+            }
         }
 
         public int GetNumSpikes(Random R)

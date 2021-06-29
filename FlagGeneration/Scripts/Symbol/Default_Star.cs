@@ -12,9 +12,9 @@ namespace FlagGeneration
 {
     class Default_Star : Symbol
     {
-        public Default_Star(Random R) : base(R) { }
+        public Default_Star(FlagMainPattern flag, Random R) : base(flag, R) { }
 
-        public override void Draw(SvgDocument Svg, FlagMainPattern flag, Vector2 center, float size, float angle, Color c)
+        public override void Draw(SvgDocument Svg, Vector2 center, float size, float angle, Color primaryColor, Color secondaryColor)
         {
             int numCorners = 5;
             float startAngle = angle + 180;
@@ -36,7 +36,24 @@ namespace FlagGeneration
                 vertices[i] = new Vector2(x, y);
             }
 
-            flag.DrawPolygon(Svg, vertices, c);
+            Flag.DrawPolygon(Svg, vertices, primaryColor);
+
+            if(HasFrame)
+            {
+                float framedOuterRadius = outerRadius * FrameWidth;
+                float framedInnerRadius = innerRadius * FrameWidth;
+                Vector2[] framedVertices = new Vector2[numVertices];
+                for (int i = 0; i < numVertices; i++)
+                {
+                    float curAngle = startAngle + (i * angleStep);
+                    bool outerCorner = i % 2 == 0;
+                    float radius = outerCorner ? framedOuterRadius : framedInnerRadius;
+                    float x = center.X + (float)(radius * Math.Sin(DegreeToRadian(curAngle)));
+                    float y = center.Y + (float)(radius * Math.Cos(DegreeToRadian(curAngle)));
+                    framedVertices[i] = new Vector2(x, y);
+                }
+                Flag.DrawPolygon(Svg, framedVertices, secondaryColor);
+            }
         }
     }
 }

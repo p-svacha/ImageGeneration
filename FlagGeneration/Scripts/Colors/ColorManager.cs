@@ -53,5 +53,16 @@ namespace FlagGeneration
         {
             return GetRandomColor(excludedColors.ToList());
         }
+
+        /// <summary>
+        /// Returns a secondary color (usually for a framed symbol or coa). It will be unlike the primary color and have a good chance to be a color that is already used in flagColors, but in can also be a random one.
+        /// </summary>
+        public Color GetSecondaryColor(Color primaryColor, List<Color> flagColors)
+        {
+            if (flagColors == null) flagColors = new List<Color>();
+            if (flagColors.Contains(primaryColor)) flagColors.Remove(primaryColor);
+            flagColors.Add(GetRandomColor(flagColors));
+            return flagColors[R.Next(0, flagColors.Count)];
+        }
     }
 }

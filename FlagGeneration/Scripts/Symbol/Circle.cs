@@ -12,11 +12,16 @@ namespace FlagGeneration
 {
     class Circle : Symbol
     {
-        public Circle(Random R) : base(R) { }
+        public Circle(FlagMainPattern flag, Random R) : base(flag, R) { }
 
-        public override void Draw(SvgDocument Svg, FlagMainPattern flag, Vector2 center, float size, float angle, Color c)
+        public override void Draw(SvgDocument Svg, Vector2 center, float size, float angle, Color primaryColor, Color secondaryColor)
         {
-            flag.DrawCircle(Svg, center, size / 2, c);
+            Flag.DrawCircle(Svg, center, size / 2, primaryColor);
+
+            if (HasFrame)
+            {
+                Flag.DrawCircle(Svg, center, (size / 2) * FrameWidth, secondaryColor);
+            }
         }
     }
 }

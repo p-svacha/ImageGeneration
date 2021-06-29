@@ -38,7 +38,6 @@ namespace FlagGeneration
 
             Style style = GetRandomStyle();
 
-            CoatOfArmsChance = 1f;
             CoatOfArmsPosition = FlagCenter;
 
             Color bgColor, secColor;
@@ -48,7 +47,8 @@ namespace FlagGeneration
             {
                 case Style.Plain:
                     bgColor = ColorManager.GetRandomColor();
-                    CoatOfArmsColor = ColorManager.GetRandomColor(new List<Color>() { bgColor });
+                    CoatOfArmsPrimaryColor = ColorManager.GetRandomColor(new List<Color>() { bgColor });
+                    AddUsedColor(bgColor);
                     minCoaSizeRel = 0.6f;
                     maxCoaSizeRel = 0.95f;
                     DrawRectangle(SvgDocument, 0, 0, FlagWidth, FlagHeight, bgColor);
@@ -57,9 +57,11 @@ namespace FlagGeneration
                 case Style.Frame:
                     bgColor = ColorManager.GetRandomColor();
                     secColor = ColorManager.GetRandomColor(new List<Color>() { bgColor });
+                    AddUsedColor(bgColor);
+                    AddUsedColor(secColor);
                     coaCandidateColors.Add(bgColor);
                     coaCandidateColors.Add(ColorManager.GetRandomColor(secColor));
-                    CoatOfArmsColor = coaCandidateColors[R.Next(0, coaCandidateColors.Count)];
+                    CoatOfArmsPrimaryColor = coaCandidateColors[R.Next(0, coaCandidateColors.Count)];
 
                     float frameHeightRel = RandomRange(MIN_FRAME_SIZE, MAX_FRAME_SIZE);
                     float frameSize = frameHeightRel * FlagHeight;
@@ -74,9 +76,11 @@ namespace FlagGeneration
                 case Style.Diamond:
                     bgColor = ColorManager.GetRandomColor();
                     secColor = ColorManager.GetRandomColor(new List<Color>() { bgColor });
+                    AddUsedColor(bgColor);
+                    AddUsedColor(secColor);
                     coaCandidateColors.Add(bgColor);
                     coaCandidateColors.Add(ColorManager.GetRandomColor(secColor));
-                    CoatOfArmsColor = coaCandidateColors[R.Next(0, coaCandidateColors.Count)];
+                    CoatOfArmsPrimaryColor = coaCandidateColors[R.Next(0, coaCandidateColors.Count)];
 
                     float frameSizeXRel = RandomRange(0f, MAX_DIAMOND_FRAME_SIZE);
                     float frameSizeYRel = RandomRange(0f, MAX_DIAMOND_FRAME_SIZE);

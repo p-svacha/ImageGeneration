@@ -18,9 +18,14 @@ namespace FlagGeneration
         private const int MIN_SYMBOLS = 2;
         private const int MAX_SYMBOLS = 14;
 
-        public override void Draw(SvgDocument Svg, FlagMainPattern flag, Vector2 pos, float size, Color c, Random R)
+        private const float STATIC_ANGLE_CHANCE = 0.4f; 
+
+        public override void Draw(SvgDocument Svg, FlagMainPattern flag, Random R, Vector2 pos, float size, Color primaryColor, List<Color> flagColors)
         {
             Symbol symbol = flag.GetRandomSymbol();
+            Color secondaryColor = flag.ColorManager.GetSecondaryColor(primaryColor, flagColors);
+
+            bool hasStaticAngle = R.NextDouble() < STATIC_ANGLE_CHANCE;
 
             int numSymbols = flag.RandomRange(MIN_SYMBOLS, MAX_SYMBOLS);
             float minSymbolSize = size * 0.1f + (Math.Min((MAX_SYMBOLS - numSymbols), 10) * size * 0.02f);
@@ -35,7 +40,8 @@ namespace FlagGeneration
             {
                 float angle = startAngle + i * angleStep;
                 Vector2 position = flag.GetPointOnCircle(pos, radius, angle);
-                symbol.Draw(Svg, flag, position, symbolSize, angle, c);
+                float symbolAngle = hasStaticAngle ? 0 : angle;
+                symbol.Draw(Svg, position, symbolSize, symbolAngle, primaryColor, secondaryColor);
             }
         }
     }

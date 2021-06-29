@@ -12,13 +12,15 @@ namespace FlagGeneration
 {
     class ScatteredStripesAndSymbols : FlagMainPattern
     {
-        private const int STRIPE_OFFSET = 100; // how much outside the flag the stripes start (needed to avoid seeing the end of the stripe)
+        private const int STRIPE_OFFSET = 150; // how much outside the flag the stripes start (needed to avoid seeing the end of the stripe)
 
         private const int MIN_STRIPES = 0;
         private const int MAX_STRIPES = 3;
 
         private const float MIN_STRIPE_WIDTH = 0.03f * FlagWidth;
         private const float MAX_STRIPE_WIDTH = 0.13f * FlagWidth;
+
+        private const float COA_CHANCE = 0.5f;
 
         private Dictionary<int, int> NumSymbols = new Dictionary<int, int>()
         {
@@ -64,7 +66,7 @@ namespace FlagGeneration
             ColorManager = new ColorManager(R);
 
             Color backgroundColor = ColorManager.GetRandomColor();
-            List<Color> usedColors = new List<Color>() { backgroundColor };
+            AddUsedColor(backgroundColor);
 
             int numSymbols = GetWeightedRandomInt(NumSymbols);
             bool hasSymbols = numSymbols > 0;
@@ -73,17 +75,17 @@ namespace FlagGeneration
 
             // Stripes (when there are no symbols there are always stripes)
             int minStripes = hasSymbols ? MIN_STRIPES : 1;
-            int numStripes = RandomRange(minStripes, MAX_STRIPES + 1);
+            int numStripes = RandomRange(minStripes, MAX_STRIPES);
             float thickness = RandomRange(MIN_STRIPE_WIDTH, MAX_STRIPE_WIDTH);
             StripeStyle stripeStyle = GetWeightedRandomEnum(StripeStyles);
 
             List<Color> stripeColors = new List<Color>();
             for (int i = 0; i < numStripes; i++)
             {
-                Color stripeColor = ColorManager.GetRandomColor(usedColors);
+                Color stripeColor = ColorManager.GetRandomColor(FlagColors);
                 if (i == 2 && R.NextDouble() < 0.5f) stripeColor = stripeColors[0];
                 stripeColors.Add(stripeColor);
-                usedColors.Add(stripeColor);
+                AddUsedColor(stripeColor);
             }
             List<Vector2> stripeLine = DrawStripes(SvgDocument, numStripes, thickness, stripeColors.ToArray(), stripeStyle);
 
@@ -93,8 +95,10 @@ namespace FlagGeneration
             Symbol symbol = GetRandomSymbol();
             List<Color> candidateColors = new List<Color>();
             foreach (Color c in stripeColors) candidateColors.Add(c);
-            candidateColors.Add(ColorManager.GetRandomColor(usedColors));
+            candidateColors.Add(ColorManager.GetRandomColor(FlagColors));
             Color symbolColor = candidateColors[R.Next(0, candidateColors.Count)];
+            Color symbolColorSecondary = ColorManager.GetSecondaryColor(symbolColor, FlagColors);
+            if(hasSymbols) FlagColors.Add(symbolColor);
 
             float angle = 0;
             if (R.NextDouble() < FIXED_RANDOM_ANGLE_CHANCE) angle = RandomRange(0, 360);
@@ -130,15 +134,14 @@ namespace FlagGeneration
                 {
                     Hitboxes.Add(hitbox);
                     if (individualRandomAngles) angle = RandomRange(0, 360);
-                    symbol.Draw(SvgDocument, this, new Vector2(xPos, yPos), size, angle, symbolColor);
+                    symbol.Draw(SvgDocument, new Vector2(xPos, yPos), size, angle, symbolColor, symbolColorSecondary);
                 }
             }
 
             // Coat of arms
-            if(!hasSymbols)
+            if(!hasSymbols && r.NextDouble() < COA_CHANCE)
             {
-                CoatOfArmsChance = 0.5f;
-                CoatOfArmsColor = ColorManager.GetRandomColor(usedColors);
+                CoatOfArmsPrimaryColor = ColorManager.GetRandomColor(FlagColors);
 
                 // Chose random point on line for coa position
                 float factor = (float)(R.NextDouble() * 0.5f + 0.25f);

@@ -42,7 +42,9 @@ namespace FlagGeneration
             CoatOfArmsPosition = FlagCenter;
 
             Color backgroundColor = ColorManager.GetRandomColor();
+            AddUsedColor(backgroundColor);
             Color crossColor = ColorManager.GetRandomColor(backgroundColor);
+            AddUsedColor(crossColor);
             Color innerCrossColor = ColorManager.GetRandomColor(crossColor);
             Color lowerHalfColor = ColorManager.GetRandomColor(backgroundColor, crossColor);
 
@@ -69,6 +71,7 @@ namespace FlagGeneration
             if(R.NextDouble() < BOTTOM_HALF_DIFFERENT_COLOR_CHANCE)
             {
                 LowerHalfDifferentColor = true;
+                AddUsedColor(lowerHalfColor);
                 DrawRectangle(SvgDocument, 0, FlagHeight / 2 + crossWidth / 2, FlagWidth - (FlagWidth - crossCenterX) - crossWidth / 2, FlagHeight / 2 - crossWidth / 2, lowerHalfColor);
                 DrawRectangle(SvgDocument, FlagWidth - (FlagWidth - crossCenterX) + crossWidth / 2, FlagHeight / 2 + crossWidth / 2, FlagWidth - crossCenterX - crossWidth / 2, FlagHeight / 2 - crossWidth / 2, lowerHalfColor);
             }
@@ -92,6 +95,7 @@ namespace FlagGeneration
             if (R.NextDouble() < INNER_CROSS_CHANCE)
             {
                 HasInnerCross = true;
+                AddUsedColor(innerCrossColor);
                 float innerCrossMinWidth = crossWidth * 0.3f;
                 float innerCrossMaxWidth = crossWidth * 0.8f;
                 innerCrossWidth = RandomRange(innerCrossMinWidth, innerCrossMaxWidth);
@@ -104,18 +108,16 @@ namespace FlagGeneration
             if (R.NextDouble() < COA_TOP_LEFT_CHANCE)
             {
                 HasTopLeftCoa = true;
-                CoatOfArmsChance = 1f;
                 List<Color> candidateColors = new List<Color>() { crossColor };
                 if (LowerHalfDifferentColor) candidateColors.Add(lowerHalfColor);
                 if (HasInnerCross) candidateColors.Add(innerCrossColor);
-                CoatOfArmsColor = candidateColors[R.Next(0, candidateColors.Count)];
+                CoatOfArmsPrimaryColor = candidateColors[R.Next(0, candidateColors.Count)];
                 CoatOfArmsPosition = new Vector2(crossStartX * 0.5f, crossStartY * 0.5f);
                 CoatOfArmsSize = FlagHeight * 0.3f;
                 ApplyCoatOfArms(SvgDocument);
             }
             else if(R.NextDouble() < COA_CENTER_CHANCE && HasCenterCircle)
             {
-                CoatOfArmsChance = 1f;
                 CoatOfArmsPosition = crossCenter;
                 float coaMinSize = CenterCircleRadius * 0.9f;
                 float coaMaxSize = CenterCircleRadius * 1.7f;
@@ -123,7 +125,7 @@ namespace FlagGeneration
                 List<Color> candidateColors = new List<Color>() { backgroundColor };
                 if (LowerHalfDifferentColor) candidateColors.Add(lowerHalfColor);
                 if (HasInnerCross) candidateColors.Add(crossColor);
-                CoatOfArmsColor = candidateColors[R.Next(0, candidateColors.Count)];
+                CoatOfArmsPrimaryColor = candidateColors[R.Next(0, candidateColors.Count)];
                 ApplyCoatOfArms(SvgDocument);
             }
             if(R.NextDouble() < CORNER_SYMBOL_CHANCE && !IsShifted && !HasTopLeftCoa)
@@ -131,17 +133,23 @@ namespace FlagGeneration
                 Symbol symbol = GetRandomSymbol();
 
                 Color topSymbolColor, botSymbolColor;
+                Color topSymbolColorSecondary, botSymbolColorSecondary;
+
                 if (!LowerHalfDifferentColor || R.NextDouble() < 0.5f)
                 {
                     List<Color> candidateColors = new List<Color>() { crossColor };
                     if (HasInnerCross) candidateColors.Add(innerCrossColor);
                     topSymbolColor = candidateColors[R.Next(0, candidateColors.Count)];
                     botSymbolColor = topSymbolColor;
+                    topSymbolColorSecondary = ColorManager.GetSecondaryColor(topSymbolColor, FlagColors);
+                    botSymbolColorSecondary = topSymbolColorSecondary;
                 }
                 else
                 {
                     topSymbolColor = lowerHalfColor;
                     botSymbolColor = backgroundColor;
+                    topSymbolColorSecondary = backgroundColor;
+                    botSymbolColorSecondary = lowerHalfColor;
                 }
 
                 float symbolMaxSize = FlagHeight * 0.5f - crossWidth * 0.5f;
@@ -153,10 +161,10 @@ namespace FlagGeneration
                 float top = crossStartY * 0.5f;
                 float bottom = crossStartY + crossWidth + ((FlagHeight - crossStartY - crossWidth) * 0.5f);
 
-                symbol.Draw(SvgDocument, this, new Vector2(left, top), symbolSize, 0f, topSymbolColor);
-                symbol.Draw(SvgDocument, this, new Vector2(right, top), symbolSize, 0f, topSymbolColor);
-                symbol.Draw(SvgDocument, this, new Vector2(left, bottom), symbolSize, 0f, botSymbolColor);
-                symbol.Draw(SvgDocument, this, new Vector2(right, bottom), symbolSize, 0f, botSymbolColor);
+                symbol.Draw(SvgDocument, new Vector2(left, top), symbolSize, 0f, topSymbolColor, topSymbolColorSecondary);
+                symbol.Draw(SvgDocument, new Vector2(right, top), symbolSize, 0f, topSymbolColor, topSymbolColorSecondary);
+                symbol.Draw(SvgDocument, new Vector2(left, bottom), symbolSize, 0f, botSymbolColor, botSymbolColorSecondary);
+                symbol.Draw(SvgDocument, new Vector2(right, bottom), symbolSize, 0f, botSymbolColor, botSymbolColorSecondary);
             }
         }
     }

@@ -26,16 +26,16 @@ namespace FlagGeneration
             { FrameType.Star, 50 }
         };
 
-        public override void Draw(SvgDocument Svg, FlagMainPattern flag, Vector2 pos, float size, Color c, Random R)
+        public override void Draw(SvgDocument Svg, FlagMainPattern flag, Random R, Vector2 pos, float size, Color primaryColor, List<Color> flagColors)
         {
+            float coaSize = 0f;
 
+            // Draw Frame
             switch(GetRandomFrameType(R))
             {
                 case FrameType.Circle:
-                    flag.DrawCircle(Svg, pos, size/2, c);
-                    Color coaColor = flag.ColorManager.GetRandomColor(new List<Color>() { c });
-                    CoatOfArms coa = flag.GetRandomCoa();
-                    coa.Draw(Svg, flag, pos, size * 0.8f, coaColor, R);
+                    flag.DrawCircle(Svg, pos, size/2, primaryColor);
+                    coaSize = size * 0.8f;
                     break;
 
                 case FrameType.Star:
@@ -59,13 +59,22 @@ namespace FlagGeneration
                         vertices[i] = new Vector2(x, y);
                     }
 
-                    flag.DrawPolygon(Svg, vertices, c);
+                    flag.DrawPolygon(Svg, vertices, primaryColor);
 
-                    coaColor = flag.ColorManager.GetRandomColor(new List<Color>() { c });
-                    coa = flag.GetRandomCoa();
-                    coa.Draw(Svg, flag, pos, innerRadius * 2* 0.8f, coaColor, R);
+                    coaSize = innerRadius * 2 * 0.8f;
                     break;
             }
+
+            // Draw COA inside frame
+            if (flagColors == null) flagColors = new List<Color>();
+            if (flagColors.Contains(primaryColor)) flagColors.Remove(primaryColor);
+            flagColors.Add(flag.ColorManager.GetRandomColor(flagColors));
+
+            Color coaColor = flagColors[R.Next(0, flagColors.Count)];
+            List<Color> coaSecondaryColors = flagColors.Except(new List<Color>() { coaColor }).ToList();
+            CoatOfArms coa = flag.GetRandomCoa();
+            coa.Draw(Svg, flag, R, pos, coaSize, coaColor, coaSecondaryColors);
+
         }
 
         private FrameType GetRandomFrameType(Random R)

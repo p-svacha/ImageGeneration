@@ -28,7 +28,7 @@ namespace FlagGeneration
 
         private Dictionary<int, int> NumStripesDictionary = new Dictionary<int, int>()
         {
-            {2, 40 },
+            {2, 60 },
             {3, 60 },
             {4, 20 },
             {5, 30 },
@@ -67,20 +67,16 @@ namespace FlagGeneration
 
         private const float LEFT_TRIANGLE_MIN_WIDTH = 0.2f; // Relative to flag width
         private const float LEFT_TRIANGLE_MAX_WIDTH = 0.6f; // Relative to flag width
+        private const float LEFT_TRIANGLE_FULL_WIDTH_CHANCE = 0.1f;
 
-        private const float COAT_OF_ARMS_CHANCE = 0.5f;
         private const float BIG_COA_CHANCE = 0.5f;
+        private const float COA_CHANCE = 0.5f;
 
         // Active values
         public int NumStripes;
         public bool EvenStripes;
         public bool HasWideMidStripe;
         public StripeDirectionType StripeDirection;
-
-        public Stripes()
-        {
-
-        }
 
         public override void Apply(SvgDocument SvgDocument, Random r)
         {
@@ -154,19 +150,24 @@ namespace FlagGeneration
                 curRel += stripeSize;
             }
 
-            CoatOfArmsChance = COAT_OF_ARMS_CHANCE;
-
             float minCoaSize = 0, maxCoaSize = 0; // Absolute size
+
+            // Add stripe colors as secondary colors
+            foreach (Color c in stripeColors) AddUsedColor(c);
 
             switch(GetOverlayType())
             {
                 case OverlayType.None:
                     if (!EvenStripes && R.NextDouble() < MID_STRIPE_SYMBOLS_CHANCE)
                     {
-                        CoatOfArmsChance = 0f;
-                        int numSymbols = RandomRange(MID_STRIPE_SYMBOLS_MIN_AMOUNT, MID_STRIPE_SYMBOLS_MAX_AMOUNT + 1);
+                        int numSymbols = RandomRange(MID_STRIPE_SYMBOLS_MIN_AMOUNT, MID_STRIPE_SYMBOLS_MAX_AMOUNT);
 
-                        Color symbolColor = ColorManager.GetRandomColor(new List<Color>() { stripeColors[NumStripes / 2] });
+                        List<Color> candidateColors = new List<Color>();
+                        foreach (Color c in stripeColors) if (!candidateColors.Contains(c)) candidateColors.Add(c);
+                        candidateColors.Add(ColorManager.GetRandomColor(new List<Color>() { stripeColors[NumStripes / 2] }));
+                        if (candidateColors.Contains(stripeColors[NumStripes / 2])) candidateColors.Remove(stripeColors[NumStripes / 2]);
+                        Color symbolColor = candidateColors[R.Next(0, candidateColors.Count)];
+                        Color symbolSecondaryColor = ColorManager.GetSecondaryColor(symbolColor, FlagColors);
 
                         float midStripeWidth = stripeSizes[(NumStripes / 2)];
                         float minSymbolRelSize = Math.Min(midStripeWidth, 0.1f);
@@ -178,16 +179,20 @@ namespace FlagGeneration
                         for(int i = 0; i < numSymbols; i++)
                         {
                             Vector2 position = new Vector2(StripeDirection == StripeDirectionType.Horizontal ? (i + 1) * relStepSize * FlagWidth : FlagCenter.X, StripeDirection == StripeDirectionType.Horizontal ? FlagCenter.Y : (i + 1) * relStepSize * FlagHeight);
-                            symbol.Draw(SvgDocument, this, position, StripeDirection == StripeDirectionType.Horizontal ? symbolRelSize * FlagHeight : symbolRelSize * FlagHeight, 0, symbolColor);
+                            symbol.Draw(SvgDocument, position, StripeDirection == StripeDirectionType.Horizontal ? symbolRelSize * FlagHeight : symbolRelSize * FlagHeight, 0, symbolColor, symbolSecondaryColor);
                         }
 
                     }
 
-                    else // Coat of arms
+                    else if(R.NextDouble() < COA_CHANCE) // Coat of arms
                     {
                         CoatOfArmsPosition = FlagCenter;
-                        List<Color> forbiddenCoaColors = EvenStripes ? new List<Color>() { stripeColors[NumStripes / 2 - 1], stripeColors[NumStripes / 2] } : new List<Color>() { stripeColors[NumStripes / 2] };
                         float coaSizeRel = EvenStripes ? stripeSizes[0] * 2 : stripeSizes[NumStripes / 2];
+                        CoatOfArmsSize = StripeDirection == StripeDirectionType.Horizontal ? coaSizeRel * FlagHeight : coaSizeRel * FlagWidth;
+                        CoatOfArmsSize = Math.Min(FlagHeight, CoatOfArmsSize);
+                        CoatOfArmsSize *= 0.9f;
+
+                        List<Color> forbiddenCoaColors = EvenStripes ? new List<Color>() { stripeColors[NumStripes / 2 - 1], stripeColors[NumStripes / 2] } : new List<Color>() { stripeColors[NumStripes / 2] };
                         if (!EvenStripes && R.NextDouble() < BIG_COA_CHANCE)
                         {
                             coaSizeRel = stripeSizes[(NumStripes / 2) - 1] + stripeSizes[(NumStripes / 2)] + stripeSizes[(NumStripes / 2) + 1];
@@ -195,10 +200,10 @@ namespace FlagGeneration
                             forbiddenCoaColors.Add(stripeColors[(NumStripes / 2) + 1]);
                         }
 
-                        CoatOfArmsSize = StripeDirection == StripeDirectionType.Horizontal ? coaSizeRel * FlagHeight : coaSizeRel * FlagWidth;
-                        CoatOfArmsSize = Math.Min(FlagHeight, CoatOfArmsSize);
-                        CoatOfArmsSize *= 0.9f;
-                        CoatOfArmsColor = ColorManager.GetRandomColor(forbiddenCoaColors);
+                        List<Color> candidateColors = new List<Color>();
+                        foreach (Color c in stripeColors.Except(forbiddenCoaColors)) if (!candidateColors.Contains(c)) candidateColors.Add(c);
+                        candidateColors.Add(ColorManager.GetRandomColor(forbiddenCoaColors));
+                        CoatOfArmsPrimaryColor = candidateColors[R.Next(0, candidateColors.Count)];
 
                         ApplyCoatOfArms(SvgDocument);
                     }
@@ -208,6 +213,8 @@ namespace FlagGeneration
                     List<Color> forbiddenColors = new List<Color>();
                     for (int i = 0; i <= NumStripes / 2; i++) forbiddenColors.Add(stripeColors[i]);
                     Color squareColor = ColorManager.GetRandomColor(forbiddenColors);
+                    AddUsedColor(squareColor);
+
                     float rectHeight = FlagHeight * 0.5f;
                     float rectWidth = FlagWidth * 0.5f;
                     if(!EvenStripes)
@@ -226,22 +233,40 @@ namespace FlagGeneration
                     }
                     DrawRectangle(SvgDocument, 0, 0, rectWidth, rectHeight, squareColor);
 
-                    // Coa
-                    CoatOfArmsPosition = new Vector2(rectWidth * 0.5f, rectHeight * 0.5f);
-                    minCoaSize = rectHeight * 0.5f;
-                    maxCoaSize = rectHeight;
-                    CoatOfArmsSize = RandomRange(minCoaSize, maxCoaSize);
-                    List<Color> candidateColors = new List<Color>();
-                    foreach (Color c in stripeColors) if (!candidateColors.Contains(c)) candidateColors.Add(c);
-                    candidateColors.Add(ColorManager.GetRandomColor(new List<Color>() { squareColor }));
-                    CoatOfArmsColor = candidateColors[R.Next(0, candidateColors.Count)];
+                    // Coa (33% symbols, 33% coa, 33% nothing)
+                    float coaRng = (float)R.NextDouble();
 
-                    ApplyCoatOfArms(SvgDocument);
+                    if(coaRng < 0.33f)
+                    {
+                        List<Color> candidateColors = new List<Color>();
+                        foreach (Color c in stripeColors) if (!candidateColors.Contains(c)) candidateColors.Add(c);
+                        candidateColors.Add(ColorManager.GetRandomColor(new List<Color>() { squareColor }));
+                        Color symbolColor = candidateColors[R.Next(0, candidateColors.Count)];
+                        FillRectangleWithSymbols(SvgDocument, symbolColor, new Vector2(0, 0), rectWidth, rectHeight);
+                    }
+                    else if(coaRng < 0.66f)
+                    {
+                        CoatOfArmsPosition = new Vector2(rectWidth * 0.5f, rectHeight * 0.5f);
+                        minCoaSize = rectHeight * 0.5f;
+                        maxCoaSize = rectHeight;
+                        CoatOfArmsSize = RandomRange(minCoaSize, maxCoaSize);
+                        List<Color> candidateColors = new List<Color>();
+                        foreach (Color c in stripeColors) if (!candidateColors.Contains(c)) candidateColors.Add(c);
+                        candidateColors.Add(ColorManager.GetRandomColor(new List<Color>() { squareColor }));
+                        CoatOfArmsPrimaryColor = candidateColors[R.Next(0, candidateColors.Count)];
+
+                        ApplyCoatOfArms(SvgDocument);
+                    }
+
                     break;
 
                 case OverlayType.LeftTriangle:
                     Color triangleColor = ColorManager.GetRandomColor(stripeColors.ToList());
+                    AddUsedColor(triangleColor);
+
                     float triangleWidth = RandomRange(LEFT_TRIANGLE_MIN_WIDTH, LEFT_TRIANGLE_MAX_WIDTH);
+                    if (R.NextDouble() < LEFT_TRIANGLE_FULL_WIDTH_CHANCE) triangleWidth = 1f;
+
                     Vector2[] vertices = new Vector2[]
                     {
                     new Vector2(0,0), new Vector2(triangleWidth * FlagWidth, FlagHeight/2), new Vector2(0, FlagHeight)
@@ -249,34 +274,41 @@ namespace FlagGeneration
                     DrawPolygon(SvgDocument, vertices, triangleColor);
 
                     // Coa
-                    float coaXPos = (triangleWidth * 0.35f) * FlagWidth;
-                    CoatOfArmsPosition = new Vector2(coaXPos, FlagHeight / 2);
-                    maxCoaSize = Math.Min(FlagHeight * 0.5f, coaXPos);
-                    minCoaSize = maxCoaSize * 0.5f;
-                    CoatOfArmsSize = RandomRange(minCoaSize, maxCoaSize);
+                    if (R.NextDouble() < COA_CHANCE)
+                    {
+                        float coaXPos = (triangleWidth * 0.35f) * FlagWidth;
+                        CoatOfArmsPosition = new Vector2(coaXPos, FlagHeight / 2);
+                        maxCoaSize = Math.Min(FlagHeight * 0.5f, coaXPos);
+                        minCoaSize = maxCoaSize * 0.5f;
+                        CoatOfArmsSize = RandomRange(minCoaSize, maxCoaSize);
 
-                    CoatOfArmsColor = ColorManager.GetRandomColor(new List<Color>() { triangleColor });
+                        CoatOfArmsPrimaryColor = ColorManager.GetRandomColor(new List<Color>() { triangleColor });
 
-                    ApplyCoatOfArms(SvgDocument);
+                        ApplyCoatOfArms(SvgDocument);
+                    }
                     break;
 
                 case OverlayType.Antigua:
                     Color overlayColor = ColorManager.GetRandomColor(stripeColors.ToList());
+                    AddUsedColor(overlayColor);
                     Vector2[] triangle1 = new Vector2[] { new Vector2(0, 0), new Vector2(FlagWidth / 2, FlagHeight), new Vector2(0, FlagHeight) };
                     Vector2[] triangle2 = new Vector2[] { new Vector2(FlagWidth, 0), new Vector2(FlagWidth / 2, FlagHeight), new Vector2(FlagWidth, FlagHeight) };
                     DrawPolygon(SvgDocument, triangle1, overlayColor);
                     DrawPolygon(SvgDocument, triangle2, overlayColor);
 
                     // Coa
-                    float height = RandomRange(0.2f, 0.4f);
-                    CoatOfArmsPosition = new Vector2(FlagWidth / 2, height * FlagHeight);
-                    minCoaSize = 0.2f * FlagHeight;
-                    maxCoaSize = Math.Min(0.5f, height * 2f) * FlagHeight;
-                    CoatOfArmsSize = RandomRange(minCoaSize, maxCoaSize);
+                    if (R.NextDouble() < COA_CHANCE)
+                    {
+                        float height = RandomRange(0.2f, 0.4f);
+                        CoatOfArmsPosition = new Vector2(FlagWidth / 2, height * FlagHeight);
+                        minCoaSize = 0.2f * FlagHeight;
+                        maxCoaSize = Math.Min(0.5f, height * 2f) * FlagHeight;
+                        CoatOfArmsSize = RandomRange(minCoaSize, maxCoaSize);
 
-                    CoatOfArmsColor = ColorManager.GetRandomColor(stripeColors.ToList());
+                        CoatOfArmsPrimaryColor = ColorManager.GetRandomColor(stripeColors.ToList());
 
-                    ApplyCoatOfArms(SvgDocument);
+                        ApplyCoatOfArms(SvgDocument);
+                    }
                     break;
             }
             

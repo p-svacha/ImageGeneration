@@ -21,11 +21,12 @@ namespace FlagGeneration
             { new FramedCoa(), 50 },
             { new SymbolCircleCoa(), 60 },
         };
-        protected Dictionary<string, int> Symbols = new Dictionary<string, int>()
+        protected Dictionary<string, int> Symbols = new Dictionary<string, int>() // Symbols also have to be added in GetRandomSymbol()
         {
             { "DefaultStar", 80 },
-            { "Circle", 40 },
+            { "Circle", 30 },
             { "SpecialStar", 60 },
+            { "Cross", 20 }
         };
 
         // Flag Attributes
@@ -35,9 +36,10 @@ namespace FlagGeneration
         protected const float FlagHeight = FlagGenerator.FLAG_HEIGHT;
         protected static Vector2 FlagCenter = new Vector2(FlagWidth / 2f, FlagHeight / 2f);
 
+        protected List<Color> FlagColors = new List<Color>(); // Base colors of the flag, without symbols and coat of arms
+
         // Coat of Arms
-        protected float CoatOfArmsChance;       // (0-1)
-        protected Color CoatOfArmsColor;
+        protected Color CoatOfArmsPrimaryColor;
         protected Vector2 CoatOfArmsPosition;    // Absolute position
         protected float CoatOfArmsSize;         // Absolute size
 
@@ -45,11 +47,8 @@ namespace FlagGeneration
 
         protected void ApplyCoatOfArms(SvgDocument SvgDocument)
         {
-            if (R.NextDouble() < CoatOfArmsChance)
-            {
-                CoatOfArms coa = GetRandomCoa();
-                coa.Draw(SvgDocument, this, CoatOfArmsPosition, CoatOfArmsSize, CoatOfArmsColor, R);
-            }
+            CoatOfArms coa = GetRandomCoa();
+            coa.Draw(SvgDocument, this, R, CoatOfArmsPosition, CoatOfArmsSize, CoatOfArmsPrimaryColor, FlagColors);
         }
 
         public void DrawRectangle(SvgDocument SvgDocument, float startX, float startY, float width, float height, Color c)
@@ -95,9 +94,49 @@ namespace FlagGeneration
             SvgDocument.Children.Add(SvgCircle);
         }
 
+        protected const float MIN_FILLED_SYMBOL_SIZE = FlagHeight * 0.05f;
+        /// <summary>
+        /// Fills a rectangle with apprpriately sized symbols
+        /// </summary>
+        protected void FillRectangleWithSymbols(SvgDocument Svg, Color color, Vector2 topLeft, float width, float height)
+        {
+            Symbol symbol = GetRandomSymbol();
+            Color secondaryColor = ColorManager.GetSecondaryColor(color, FlagColors);
+
+            float maxSymbolSize = Math.Min(width, height);
+            if (maxSymbolSize < MIN_FILLED_SYMBOL_SIZE) return;
+
+            float symbolSize = RandomRange(MIN_FILLED_SYMBOL_SIZE, maxSymbolSize);
+            int rows = (int)(height / symbolSize);
+            float totalRowMargin = height - rows * symbolSize;
+            float rowStep = totalRowMargin / (rows + 1);
+            
+            int cols = (int)(width / symbolSize);
+            float totalColMargin = width - cols * symbolSize;
+            float colStep = totalColMargin / (cols + 1);
+
+            for(int y = 0; y < rows; y++)
+            {
+                float yPos = rowStep + y * (rowStep + symbolSize);
+
+                for(int x = 0; x < cols; x++)
+                {
+                    float xPos = colStep + x * (colStep + symbolSize);
+                    Vector2 symbolPos = new Vector2(xPos + symbolSize * 0.5f, yPos + symbolSize * 0.5f);
+                    symbol.Draw(Svg, symbolPos, symbolSize * 0.8f, 0f, color, secondaryColor);
+                }
+            }
+
+        }
+
+        protected void AddUsedColor(Color c)
+        {
+            if (!FlagColors.Contains(c)) FlagColors.Add(c);
+        }
+
         public int RandomRange(int min, int max)
         {
-            return R.Next(max - min) + min;
+            return R.Next(max - min + 1) + min;
         }
         public float RandomRange(float min, float max)
         {
@@ -130,13 +169,16 @@ namespace FlagGeneration
                     switch(kvp.Key)
                     {
                         case "DefaultStar":
-                            return new Default_Star(R);
+                            return new Default_Star(this, R);
 
                         case "Circle":
-                            return new Circle(R);
+                            return new Circle(this, R);
 
                         case "SpecialStar":
-                            return new Special_Star(R);
+                            return new Special_Star(this, R);
+
+                        case "Cross":
+                            return new Cross(this, R);
                     }
                 }
             }
