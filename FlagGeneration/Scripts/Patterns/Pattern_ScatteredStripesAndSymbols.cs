@@ -10,7 +10,7 @@ using System.Web.WebSockets;
 
 namespace FlagGeneration
 {
-    class ScatteredStripesAndSymbols : FlagMainPattern
+    class Pattern_ScatteredStripesAndSymbols : FlagMainPattern
     {
         private const int STRIPE_OFFSET = 150; // how much outside the flag the stripes start (needed to avoid seeing the end of the stripe)
 
@@ -66,7 +66,6 @@ namespace FlagGeneration
             ColorManager = new ColorManager(R);
 
             Color backgroundColor = ColorManager.GetRandomColor();
-            AddUsedColor(backgroundColor);
 
             int numSymbols = GetWeightedRandomInt(NumSymbols);
             bool hasSymbols = numSymbols > 0;
@@ -85,7 +84,6 @@ namespace FlagGeneration
                 Color stripeColor = ColorManager.GetRandomColor(FlagColors);
                 if (i == 2 && R.NextDouble() < 0.5f) stripeColor = stripeColors[0];
                 stripeColors.Add(stripeColor);
-                AddUsedColor(stripeColor);
             }
             List<Vector2> stripeLine = DrawStripes(SvgDocument, numStripes, thickness, stripeColors.ToArray(), stripeStyle);
 

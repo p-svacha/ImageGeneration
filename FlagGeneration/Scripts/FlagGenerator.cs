@@ -16,11 +16,11 @@ namespace FlagGeneration
 
         private Dictionary<FlagMainPattern, int> MainPatterns = new Dictionary<FlagMainPattern, int>()
         {
-            { new Stripes(), 100 },
-            { new CoaOnly(), 60 },
-            { new Diagonal(), 50 },
-            { new NordicCross(), 50 },
-            { new ScatteredStripesAndSymbols(), 60 },
+            { new Pattern_Stripes(), 100 },
+            { new Pattern_CoaOnly(), 60 },
+            { new Pattern_Diagonal(), 20 },
+            { new Pattern_Cross(), 80 },
+            { new Pattern_ScatteredStripesAndSymbols(), 50 },
         };
 
         public SvgDocument GenerateFlag()

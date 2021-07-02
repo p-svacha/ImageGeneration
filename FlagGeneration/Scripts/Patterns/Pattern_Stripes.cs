@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace FlagGeneration
 {
-    class Stripes : FlagMainPattern
+    class Pattern_Stripes : FlagMainPattern
     {
         public enum OverlayType
         {
@@ -152,9 +152,6 @@ namespace FlagGeneration
 
             float minCoaSize = 0, maxCoaSize = 0; // Absolute size
 
-            // Add stripe colors as secondary colors
-            foreach (Color c in stripeColors) AddUsedColor(c);
-
             switch(GetOverlayType())
             {
                 case OverlayType.None:
@@ -213,7 +210,6 @@ namespace FlagGeneration
                     List<Color> forbiddenColors = new List<Color>();
                     for (int i = 0; i <= NumStripes / 2; i++) forbiddenColors.Add(stripeColors[i]);
                     Color squareColor = ColorManager.GetRandomColor(forbiddenColors);
-                    AddUsedColor(squareColor);
 
                     float rectHeight = FlagHeight * 0.5f;
                     float rectWidth = FlagWidth * 0.5f;
@@ -262,7 +258,6 @@ namespace FlagGeneration
 
                 case OverlayType.LeftTriangle:
                     Color triangleColor = ColorManager.GetRandomColor(stripeColors.ToList());
-                    AddUsedColor(triangleColor);
 
                     float triangleWidth = RandomRange(LEFT_TRIANGLE_MIN_WIDTH, LEFT_TRIANGLE_MAX_WIDTH);
                     if (R.NextDouble() < LEFT_TRIANGLE_FULL_WIDTH_CHANCE) triangleWidth = 1f;
@@ -290,7 +285,6 @@ namespace FlagGeneration
 
                 case OverlayType.Antigua:
                     Color overlayColor = ColorManager.GetRandomColor(stripeColors.ToList());
-                    AddUsedColor(overlayColor);
                     Vector2[] triangle1 = new Vector2[] { new Vector2(0, 0), new Vector2(FlagWidth / 2, FlagHeight), new Vector2(0, FlagHeight) };
                     Vector2[] triangle2 = new Vector2[] { new Vector2(FlagWidth, 0), new Vector2(FlagWidth / 2, FlagHeight), new Vector2(FlagWidth, FlagHeight) };
                     DrawPolygon(SvgDocument, triangle1, overlayColor);

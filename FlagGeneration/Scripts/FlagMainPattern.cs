@@ -30,6 +30,7 @@ namespace FlagGeneration
         };
 
         // Flag Attributes
+        protected SvgDocument Svg;
         protected Random R;
         public ColorManager ColorManager;
         protected const float FlagWidth = FlagGenerator.FLAG_WIDTH;
@@ -53,6 +54,7 @@ namespace FlagGeneration
 
         public void DrawRectangle(SvgDocument SvgDocument, float startX, float startY, float width, float height, Color c)
         {
+            AddUsedColor(c);
             SvgRectangle svgRectangle = new SvgRectangle()
             {
                 X = startX,
@@ -66,6 +68,7 @@ namespace FlagGeneration
 
         public void DrawPolygon(SvgDocument SvgDocument, Vector2[] vertices, Color c)
         {
+            AddUsedColor(c);
             SvgPointCollection points = new SvgPointCollection();
             foreach (Vector2 p in vertices)
             {
@@ -84,6 +87,7 @@ namespace FlagGeneration
 
         public void DrawCircle(SvgDocument SvgDocument, Vector2 center, float radius, Color c)
         {
+            AddUsedColor(c);
             SvgCircle SvgCircle = new SvgCircle()
             {
                 CenterX = center.X,
@@ -129,7 +133,7 @@ namespace FlagGeneration
 
         }
 
-        protected void AddUsedColor(Color c)
+        private void AddUsedColor(Color c)
         {
             if (!FlagColors.Contains(c)) FlagColors.Add(c);
         }

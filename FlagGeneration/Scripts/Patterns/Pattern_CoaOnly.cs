@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FlagGeneration
 {
-    class CoaOnly : FlagMainPattern
+    class Pattern_CoaOnly : FlagMainPattern
     {
         public enum Style
         {
@@ -48,7 +48,6 @@ namespace FlagGeneration
                 case Style.Plain:
                     bgColor = ColorManager.GetRandomColor();
                     CoatOfArmsPrimaryColor = ColorManager.GetRandomColor(new List<Color>() { bgColor });
-                    AddUsedColor(bgColor);
                     minCoaSizeRel = 0.6f;
                     maxCoaSizeRel = 0.95f;
                     DrawRectangle(SvgDocument, 0, 0, FlagWidth, FlagHeight, bgColor);
@@ -57,8 +56,6 @@ namespace FlagGeneration
                 case Style.Frame:
                     bgColor = ColorManager.GetRandomColor();
                     secColor = ColorManager.GetRandomColor(new List<Color>() { bgColor });
-                    AddUsedColor(bgColor);
-                    AddUsedColor(secColor);
                     coaCandidateColors.Add(bgColor);
                     coaCandidateColors.Add(ColorManager.GetRandomColor(secColor));
                     CoatOfArmsPrimaryColor = coaCandidateColors[R.Next(0, coaCandidateColors.Count)];
@@ -76,8 +73,6 @@ namespace FlagGeneration
                 case Style.Diamond:
                     bgColor = ColorManager.GetRandomColor();
                     secColor = ColorManager.GetRandomColor(new List<Color>() { bgColor });
-                    AddUsedColor(bgColor);
-                    AddUsedColor(secColor);
                     coaCandidateColors.Add(bgColor);
                     coaCandidateColors.Add(ColorManager.GetRandomColor(secColor));
                     CoatOfArmsPrimaryColor = coaCandidateColors[R.Next(0, coaCandidateColors.Count)];

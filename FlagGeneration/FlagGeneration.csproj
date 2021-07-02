@@ -59,9 +59,9 @@
     <Compile Include="Scripts\CoatOfArms\FramedCoa.cs" />
     <Compile Include="Scripts\CoatOfArms\SingleSymbolCoa.cs" />
     <Compile Include="Scripts\CoatOfArms\PrefabCoa.cs" />
-    <Compile Include="Scripts\Patterns\ScatteredStripesAndSymbols.cs" />
-    <Compile Include="Scripts\Patterns\NordicCross.cs" />
-    <Compile Include="Scripts\Patterns\Diagonal.cs" />
+    <Compile Include="Scripts\Patterns\Pattern_ScatteredStripesAndSymbols.cs" />
+    <Compile Include="Scripts\Patterns\Pattern_Cross.cs" />
+    <Compile Include="Scripts\Patterns\Pattern_Diagonal.cs" />
     <Compile Include="Scripts\Symbol\Cross.cs" />
     <Compile Include="Scripts\Symbol\Circle.cs" />
     <Compile Include="Scripts\Symbol\Special_Star.cs" />
@@ -70,8 +70,8 @@
     <Compile Include="Scripts\FlagGenerator.cs" />
     <Compile Include="Scripts\Geometry\Geometry.cs" />
     <Compile Include="Scripts\FlagMainPattern.cs" />
-    <Compile Include="Scripts\Patterns\CoaOnly.cs" />
-    <Compile Include="Scripts\Patterns\Stripes.cs" />
+    <Compile Include="Scripts\Patterns\Pattern_CoaOnly.cs" />
+    <Compile Include="Scripts\Patterns\Pattern_Stripes.cs" />
     <Compile Include="Scripts\Symbol.cs" />
   </ItemGroup>
   <ItemGroup>
