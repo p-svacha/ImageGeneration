@@ -32,7 +32,7 @@ namespace FlagGeneration
             };
 
             FlagMainPattern mainPattern = GetRandomMainPattern();
-            mainPattern.Apply(SvgDoc, R);
+            mainPattern.ApplyPattern(SvgDoc, R);
 
             return SvgDoc;
         }

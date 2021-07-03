@@ -12,7 +12,7 @@ using static FlagGeneration.Geometry;
 
 namespace FlagGeneration
 {
-    class SymbolCircleCoa : CoatOfArms
+    class Coa_SymbolCircle : CoatOfArms
     {
 
         private const int MIN_SYMBOLS = 2;

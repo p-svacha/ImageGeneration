@@ -82,12 +82,8 @@ namespace FlagGeneration
             {Style.UnionJack, 100 },
         };
 
-        public override void Apply(SvgDocument SvgDocument, Random r)
+        public override void DoApply()
         {
-            Svg = SvgDocument;
-            R = r;
-            ColorManager = new ColorManager(R);
-
             float minCoaSize = 0.5f;
             float maxCoaSize = 0.95f;
             CoatOfArmsSize = RandomRange(minCoaSize * FlagHeight, maxCoaSize * FlagHeight);
@@ -129,7 +125,7 @@ namespace FlagGeneration
                 BackgroundColor2 = ColorManager.GetRandomColor(BackgroundColor, CrossColor);
             }
 
-            DrawRectangle(SvgDocument, 0f, 0f, FlagWidth, FlagHeight, BackgroundColor);
+            DrawRectangle(Svg, 0f, 0f, FlagWidth, FlagHeight, BackgroundColor);
 
             switch (GetWeightedRandomEnum(Styles))
             {
@@ -138,8 +134,8 @@ namespace FlagGeneration
 
                     if (HasTwoBackgroundColors)
                     {
-                        DrawRectangle(SvgDocument, 0, CrossCenter.Y + CrossWidth / 2, FlagWidth - (FlagWidth - CrossCenter.X) - CrossWidth / 2, FlagHeight / 2 - CrossWidth / 2, BackgroundColor2);
-                        DrawRectangle(SvgDocument, FlagWidth - (FlagWidth - CrossCenter.X) + CrossWidth / 2, FlagHeight / 2 + CrossWidth / 2, FlagWidth - CrossCenter.X - CrossWidth / 2, FlagHeight / 2 - CrossWidth / 2, BackgroundColor2);
+                        DrawRectangle(Svg, 0, CrossCenter.Y + CrossWidth / 2, FlagWidth - (FlagWidth - CrossCenter.X) - CrossWidth / 2, FlagHeight / 2 - CrossWidth / 2, BackgroundColor2);
+                        DrawRectangle(Svg, FlagWidth - (FlagWidth - CrossCenter.X) + CrossWidth / 2, FlagHeight / 2 + CrossWidth / 2, FlagWidth - CrossCenter.X - CrossWidth / 2, FlagHeight / 2 - CrossWidth / 2, BackgroundColor2);
                     }
 
                     DrawOuterHorizontalLine();
@@ -157,7 +153,7 @@ namespace FlagGeneration
                         CoatOfArmsPrimaryColor = candidateColors[R.Next(0, candidateColors.Count)];
                         CoatOfArmsPosition = new Vector2((CrossCenter.X - CrossWidth / 2) * 0.5f, (CrossCenter.Y - CrossWidth / 2) * 0.5f);
                         CoatOfArmsSize = FlagHeight * 0.3f;
-                        ApplyCoatOfArms(SvgDocument);
+                        ApplyCoatOfArms(Svg);
                     }
                     break;
 
@@ -168,11 +164,11 @@ namespace FlagGeneration
                         topDownSplit = R.NextDouble() < 0.5f;
                         if (topDownSplit)
                         {
-                            DrawRectangle(SvgDocument, 0, 0, FlagWidth, FlagHeight / 2, BackgroundColor2);
+                            DrawRectangle(Svg, 0, 0, FlagWidth, FlagHeight / 2, BackgroundColor2);
                         }
                         else
                         {
-                            DrawRectangle(SvgDocument, 0, 0, FlagWidth / 2, FlagHeight, BackgroundColor2);
+                            DrawRectangle(Svg, 0, 0, FlagWidth / 2, FlagHeight, BackgroundColor2);
                         }
                     }
 
@@ -218,17 +214,17 @@ namespace FlagGeneration
 
                         if (topDownSplit)
                         {
-                            symbol.Draw(SvgDocument, new Vector2(left, top), symbolSize, 0f, topSymbolColor, topSymbolColorSecondary);
-                            symbol.Draw(SvgDocument, new Vector2(right, top), symbolSize, 0f, topSymbolColor, topSymbolColorSecondary);
-                            symbol.Draw(SvgDocument, new Vector2(left, bottom), symbolSize, 0f, botSymbolColor, botSymbolColorSecondary);
-                            symbol.Draw(SvgDocument, new Vector2(right, bottom), symbolSize, 0f, botSymbolColor, botSymbolColorSecondary);
+                            symbol.Draw(Svg, new Vector2(left, top), symbolSize, 0f, topSymbolColor, topSymbolColorSecondary);
+                            symbol.Draw(Svg, new Vector2(right, top), symbolSize, 0f, topSymbolColor, topSymbolColorSecondary);
+                            symbol.Draw(Svg, new Vector2(left, bottom), symbolSize, 0f, botSymbolColor, botSymbolColorSecondary);
+                            symbol.Draw(Svg, new Vector2(right, bottom), symbolSize, 0f, botSymbolColor, botSymbolColorSecondary);
                         }
                         else
                         {
-                            symbol.Draw(SvgDocument, new Vector2(left, top), symbolSize, 0f, botSymbolColor, botSymbolColorSecondary);
-                            symbol.Draw(SvgDocument, new Vector2(right, top), symbolSize, 0f, topSymbolColor, topSymbolColorSecondary);
-                            symbol.Draw(SvgDocument, new Vector2(left, bottom), symbolSize, 0f, botSymbolColor, botSymbolColorSecondary);
-                            symbol.Draw(SvgDocument, new Vector2(right, bottom), symbolSize, 0f, topSymbolColor, topSymbolColorSecondary);
+                            symbol.Draw(Svg, new Vector2(left, top), symbolSize, 0f, botSymbolColor, botSymbolColorSecondary);
+                            symbol.Draw(Svg, new Vector2(right, top), symbolSize, 0f, topSymbolColor, topSymbolColorSecondary);
+                            symbol.Draw(Svg, new Vector2(left, bottom), symbolSize, 0f, botSymbolColor, botSymbolColorSecondary);
+                            symbol.Draw(Svg, new Vector2(right, bottom), symbolSize, 0f, topSymbolColor, topSymbolColorSecondary);
                         }
                     }
                     break;
@@ -239,8 +235,8 @@ namespace FlagGeneration
                     {
                         Vector2[] leftTriangle = new Vector2[] { new Vector2(0, 0), FlagCenter, new Vector2(0, FlagHeight) };
                         Vector2[] rightTriangle = new Vector2[] { new Vector2(FlagWidth, 0), FlagCenter, new Vector2(FlagWidth, FlagHeight) };
-                        DrawPolygon(SvgDocument, leftTriangle, BackgroundColor2);
-                        DrawPolygon(SvgDocument, rightTriangle, BackgroundColor2);
+                        DrawPolygon(Svg, leftTriangle, BackgroundColor2);
+                        DrawPolygon(Svg, rightTriangle, BackgroundColor2);
                     }
 
                     DrawOuterDiag1();
@@ -282,10 +278,10 @@ namespace FlagGeneration
                         float top = (FlagHeight / 2 - CrossWidth * 0.9f) / 2;
                         float bottom = FlagHeight - (FlagHeight / 2 - CrossWidth * 0.9f) / 2;
 
-                        symbol.Draw(SvgDocument, new Vector2(left, FlagCenter.Y), symbolSize, 0f, botSymbolColor, botSymbolColorSecondary);
-                        symbol.Draw(SvgDocument, new Vector2(FlagCenter.X, top), symbolSize, 0f, topSymbolColor, topSymbolColorSecondary);
-                        symbol.Draw(SvgDocument, new Vector2(FlagCenter.X, bottom), symbolSize, 0f, topSymbolColor, topSymbolColorSecondary);
-                        symbol.Draw(SvgDocument, new Vector2(right, FlagCenter.Y), symbolSize, 0f, botSymbolColor, botSymbolColorSecondary);
+                        symbol.Draw(Svg, new Vector2(left, FlagCenter.Y), symbolSize, 0f, botSymbolColor, botSymbolColorSecondary);
+                        symbol.Draw(Svg, new Vector2(FlagCenter.X, top), symbolSize, 0f, topSymbolColor, topSymbolColorSecondary);
+                        symbol.Draw(Svg, new Vector2(FlagCenter.X, bottom), symbolSize, 0f, topSymbolColor, topSymbolColorSecondary);
+                        symbol.Draw(Svg, new Vector2(right, FlagCenter.Y), symbolSize, 0f, botSymbolColor, botSymbolColorSecondary);
                     }
                     break;
 
@@ -296,8 +292,8 @@ namespace FlagGeneration
                     {
                         Vector2[] leftTriangle = new Vector2[] { new Vector2(0, 0), FlagCenter, new Vector2(0, FlagHeight) };
                         Vector2[] rightTriangle = new Vector2[] { new Vector2(FlagWidth, 0), FlagCenter, new Vector2(FlagWidth, FlagHeight) };
-                        DrawPolygon(SvgDocument, leftTriangle, BackgroundColor2);
-                        DrawPolygon(SvgDocument, rightTriangle, BackgroundColor2);
+                        DrawPolygon(Svg, leftTriangle, BackgroundColor2);
+                        DrawPolygon(Svg, rightTriangle, BackgroundColor2);
                     }
 
                     DrawOuterHorizontalLine();
@@ -324,8 +320,8 @@ namespace FlagGeneration
                         float top = (FlagHeight / 2 - CrossWidth * 0.9f) / 2;
                         float bottom = FlagHeight - (FlagHeight / 2 - CrossWidth * 0.9f) / 2;
 
-                        symbol.Draw(SvgDocument, new Vector2(FlagCenter.X, top), symbolSize, 0f, symbolColor, symbolColorSecondary);
-                        symbol.Draw(SvgDocument, new Vector2(FlagCenter.X, bottom), symbolSize, 0f, symbolColor, symbolColorSecondary);
+                        symbol.Draw(Svg, new Vector2(FlagCenter.X, top), symbolSize, 0f, symbolColor, symbolColorSecondary);
+                        symbol.Draw(Svg, new Vector2(FlagCenter.X, bottom), symbolSize, 0f, symbolColor, symbolColorSecondary);
                     }
                     break;
 
@@ -336,8 +332,8 @@ namespace FlagGeneration
                     {
                         Vector2[] topTriangle = new Vector2[] { new Vector2(0, 0), new Vector2(FlagWidth, 0), FlagCenter};
                         Vector2[] botTriangle = new Vector2[] { new Vector2(0, FlagHeight), FlagCenter, new Vector2(FlagWidth, FlagHeight) };
-                        DrawPolygon(SvgDocument, topTriangle, BackgroundColor2);
-                        DrawPolygon(SvgDocument, botTriangle, BackgroundColor2);
+                        DrawPolygon(Svg, topTriangle, BackgroundColor2);
+                        DrawPolygon(Svg, botTriangle, BackgroundColor2);
                     }
 
                     DrawOuterVerticalLine();
@@ -364,16 +360,16 @@ namespace FlagGeneration
                         float left = (FlagWidth / 2 - CrossWidth * 1.5f) / 2;
                         float right = FlagWidth - ((FlagWidth / 2 - CrossWidth * 1.5f) / 2);
 
-                        symbol.Draw(SvgDocument, new Vector2(left, FlagCenter.Y), symbolSize, 0f, symbolColor, symbolColorSecondary);
-                        symbol.Draw(SvgDocument, new Vector2(right, FlagCenter.Y), symbolSize, 0f, symbolColor, symbolColorSecondary);
+                        symbol.Draw(Svg, new Vector2(left, FlagCenter.Y), symbolSize, 0f, symbolColor, symbolColorSecondary);
+                        symbol.Draw(Svg, new Vector2(right, FlagCenter.Y), symbolSize, 0f, symbolColor, symbolColorSecondary);
                     }
                     break;
 
                 case Style.HorizontalStripe:
                     if (HasTwoBackgroundColors)
                     {
-                        if (R.NextDouble() < 0.2f) DrawRectangle(SvgDocument, 0, 0, FlagWidth / 2, FlagHeight, BackgroundColor2);
-                        else DrawRectangle(SvgDocument, 0, 0, FlagWidth, FlagHeight / 2, BackgroundColor2);
+                        if (R.NextDouble() < 0.2f) DrawRectangle(Svg, 0, 0, FlagWidth / 2, FlagHeight, BackgroundColor2);
+                        else DrawRectangle(Svg, 0, 0, FlagWidth, FlagHeight / 2, BackgroundColor2);
                     }
                     DrawOuterHorizontalLine();
                     DrawCenterCircle();
@@ -383,8 +379,8 @@ namespace FlagGeneration
                 case Style.VerticalStripe:
                     if (HasTwoBackgroundColors)
                     {
-                        if(R.NextDouble() < 0.3f) DrawRectangle(SvgDocument, 0, 0, FlagWidth, FlagHeight / 2, BackgroundColor2);
-                        else DrawRectangle(SvgDocument, 0, 0, FlagWidth / 2, FlagHeight, BackgroundColor2);
+                        if(R.NextDouble() < 0.3f) DrawRectangle(Svg, 0, 0, FlagWidth, FlagHeight / 2, BackgroundColor2);
+                        else DrawRectangle(Svg, 0, 0, FlagWidth / 2, FlagHeight, BackgroundColor2);
                     }
                     DrawOuterVerticalLine();
                     DrawCenterCircle();
@@ -397,12 +393,12 @@ namespace FlagGeneration
                         if (R.NextDouble() < 0.2f)
                         {
                             Vector2[] triangle = new Vector2[] { new Vector2(0, 0), new Vector2(FlagWidth, 0), new Vector2(0, FlagHeight) };
-                            DrawPolygon(SvgDocument, triangle, BackgroundColor2);
+                            DrawPolygon(Svg, triangle, BackgroundColor2);
                         }
                         else
                         {
                             Vector2[] triangle = new Vector2[] { new Vector2(0, 0), new Vector2(FlagWidth, 0), new Vector2(FlagWidth, FlagHeight) };
-                            DrawPolygon(SvgDocument, triangle, BackgroundColor2);
+                            DrawPolygon(Svg, triangle, BackgroundColor2);
                         }
                     }
                     DrawOuterDiag1();
@@ -416,12 +412,12 @@ namespace FlagGeneration
                         if (R.NextDouble() < 0.2f)
                         {
                             Vector2[] triangle = new Vector2[] { new Vector2(0, 0), new Vector2(FlagWidth, 0), new Vector2(FlagWidth, FlagHeight) };
-                            DrawPolygon(SvgDocument, triangle, BackgroundColor2);
+                            DrawPolygon(Svg, triangle, BackgroundColor2);
                         }
                         else
                         {
                             Vector2[] triangle = new Vector2[] { new Vector2(0, 0), new Vector2(FlagWidth, 0), new Vector2(0, FlagHeight) };
-                            DrawPolygon(SvgDocument, triangle, BackgroundColor2);
+                            DrawPolygon(Svg, triangle, BackgroundColor2);
                         }
                     }
                     DrawOuterDiag2();
@@ -437,33 +433,33 @@ namespace FlagGeneration
                         double ujColorRng = R.NextDouble();
                         if(ujColorRng < 0.14f) // Left|Right
                         {
-                            DrawRectangle(SvgDocument, 0, 0, FlagWidth / 2, FlagHeight, BackgroundColor2);
+                            DrawRectangle(Svg, 0, 0, FlagWidth / 2, FlagHeight, BackgroundColor2);
                         }
                         else if(ujColorRng < 0.28f) // Top|Bot
                         {
-                            DrawRectangle(SvgDocument, 0, 0, FlagWidth, FlagHeight / 2, BackgroundColor2);
+                            DrawRectangle(Svg, 0, 0, FlagWidth, FlagHeight / 2, BackgroundColor2);
                         }
                         else if(ujColorRng < 0.42f) // Diag1
                         {
                             Vector2[] triangle = new Vector2[] { new Vector2(0, 0), new Vector2(FlagWidth, 0), new Vector2(0, FlagHeight) };
-                            DrawPolygon(SvgDocument, triangle, BackgroundColor2);
+                            DrawPolygon(Svg, triangle, BackgroundColor2);
                         }
                         else if(ujColorRng < 0.57f) // Diag2
                         {
                             Vector2[] triangle = new Vector2[] { new Vector2(0, 0), new Vector2(FlagWidth, 0), new Vector2(FlagWidth, FlagHeight) };
-                            DrawPolygon(SvgDocument, triangle, BackgroundColor2);
+                            DrawPolygon(Svg, triangle, BackgroundColor2);
                         }
                         else if(ujColorRng < 0.71f) // Bot|Top Triangle
                         {
                             Vector2[] leftTriangle = new Vector2[] { new Vector2(0, 0), FlagCenter, new Vector2(0, FlagHeight) };
                             Vector2[] rightTriangle = new Vector2[] { new Vector2(FlagWidth, 0), FlagCenter, new Vector2(FlagWidth, FlagHeight) };
-                            DrawPolygon(SvgDocument, leftTriangle, BackgroundColor2);
-                            DrawPolygon(SvgDocument, rightTriangle, BackgroundColor2);
+                            DrawPolygon(Svg, leftTriangle, BackgroundColor2);
+                            DrawPolygon(Svg, rightTriangle, BackgroundColor2);
                         }
                         else if(ujColorRng < 0.85f) // Corners
                         {
-                            DrawRectangle(SvgDocument, 0, 0, FlagWidth / 2, FlagHeight / 2, BackgroundColor2);
-                            DrawRectangle(SvgDocument, FlagCenter.X, FlagCenter.Y, FlagWidth / 2, FlagHeight / 2, BackgroundColor2);
+                            DrawRectangle(Svg, 0, 0, FlagWidth / 2, FlagHeight / 2, BackgroundColor2);
+                            DrawRectangle(Svg, FlagCenter.X, FlagCenter.Y, FlagWidth / 2, FlagHeight / 2, BackgroundColor2);
                         }
                         else // Alternating
                         {
@@ -471,10 +467,10 @@ namespace FlagGeneration
                             Vector2[] tri2 = new Vector2[] { new Vector2(FlagWidth, 0), new Vector2(FlagWidth, FlagHeight / 2), FlagCenter };
                             Vector2[] tri3 = new Vector2[] { new Vector2(FlagWidth, FlagHeight), new Vector2(FlagWidth / 2, FlagHeight), FlagCenter };
                             Vector2[] tri4 = new Vector2[] { new Vector2(0, FlagHeight / 2), new Vector2(0, FlagHeight), FlagCenter };
-                            DrawPolygon(SvgDocument, tri1, BackgroundColor2);
-                            DrawPolygon(SvgDocument, tri2, BackgroundColor2);
-                            DrawPolygon(SvgDocument, tri3, BackgroundColor2);
-                            DrawPolygon(SvgDocument, tri4, BackgroundColor2);
+                            DrawPolygon(Svg, tri1, BackgroundColor2);
+                            DrawPolygon(Svg, tri2, BackgroundColor2);
+                            DrawPolygon(Svg, tri3, BackgroundColor2);
+                            DrawPolygon(Svg, tri4, BackgroundColor2);
                         }
                     }
 
@@ -530,7 +526,7 @@ namespace FlagGeneration
                 if (HasInnerCross) candidateColors.Add(CrossColor);
                 if (HasInnerCross && candidateColors.Contains(InnerCrossColor)) candidateColors.Remove(InnerCrossColor);
                 CoatOfArmsPrimaryColor = candidateColors[R.Next(0, candidateColors.Count)];
-                ApplyCoatOfArms(SvgDocument);
+                ApplyCoatOfArms(Svg);
             }
         }
 

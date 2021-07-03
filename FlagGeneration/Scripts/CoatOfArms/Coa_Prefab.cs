@@ -14,7 +14,7 @@ namespace FlagGeneration
     /// All SVG Prefabs are from https://svgsilh.com/
     /// SVG's should be close to square
     /// </summary>
-    class PrefabCoa : CoatOfArms
+    class Coa_Prefab : CoatOfArms
     {
         public override void Draw(SvgDocument Svg, FlagMainPattern flag, Random R, Vector2 pos, float size, Color primaryColor, List<Color> flagColors)
         {

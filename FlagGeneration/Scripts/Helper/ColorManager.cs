@@ -59,10 +59,11 @@ namespace FlagGeneration
         /// </summary>
         public Color GetSecondaryColor(Color primaryColor, List<Color> flagColors)
         {
-            if (flagColors == null) flagColors = new List<Color>();
-            if (flagColors.Contains(primaryColor)) flagColors.Remove(primaryColor);
-            flagColors.Add(GetRandomColor(flagColors));
-            return flagColors[R.Next(0, flagColors.Count)];
+            List<Color> candidateColors = new List<Color>();
+            candidateColors.AddRange(flagColors);
+            if (candidateColors.Contains(primaryColor)) candidateColors.Remove(primaryColor);
+            candidateColors.Add(GetRandomColor(candidateColors));
+            return candidateColors[R.Next(0, candidateColors.Count)];
         }
     }
 }

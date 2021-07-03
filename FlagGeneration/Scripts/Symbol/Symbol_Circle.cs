@@ -10,9 +10,9 @@ using static FlagGeneration.Geometry;
 
 namespace FlagGeneration
 {
-    class Circle : Symbol
+    class Symbol_Circle : Symbol
     {
-        public Circle(FlagMainPattern flag, Random R) : base(flag, R) { }
+        public Symbol_Circle(FlagMainPattern flag, Random R) : base(flag, R) { }
 
         public override void Draw(SvgDocument Svg, Vector2 center, float size, float angle, Color primaryColor, Color secondaryColor)
         {

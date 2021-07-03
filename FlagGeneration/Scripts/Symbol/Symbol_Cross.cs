@@ -10,7 +10,7 @@ using static FlagGeneration.Geometry;
 
 namespace FlagGeneration
 {
-    class Cross : Symbol
+    class Symbol_Cross : Symbol
     {
 
         private const float MIN_CROSS_WIDTH = 0.2f; // relative to cross size
@@ -20,7 +20,7 @@ namespace FlagGeneration
         private const float X_CHANCE = 0.2f; // chance that + is turned into x
         private bool IsX;
 
-        public Cross(FlagMainPattern flag, Random R) : base(flag, R)
+        public Symbol_Cross(FlagMainPattern flag, Random R) : base(flag, R)
         {
             CrossWidthRel = RandomRange(MIN_CROSS_WIDTH, MAX_CROSS_WIDTH);
             IsX = R.NextDouble() < X_CHANCE;

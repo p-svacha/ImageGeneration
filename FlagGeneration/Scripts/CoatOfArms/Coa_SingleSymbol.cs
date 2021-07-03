@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace FlagGeneration
 {
-    class SingleSymbolCoa : CoatOfArms
+    class Coa_SingleSymbol : CoatOfArms
     {
         public override void Draw(SvgDocument Svg, FlagMainPattern flag, Random R, Vector2 pos, float size, Color primaryColor, List<Color> flagColors)
         {

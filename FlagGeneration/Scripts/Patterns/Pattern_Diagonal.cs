@@ -32,11 +32,8 @@ namespace FlagGeneration
         private const float INNER_CROSS_CHANCE = 0.25f;
         private const float CROSS_DIFFERENT_SIDE_COLORS_CHANCE = 0.25f;
 
-        public override void Apply(SvgDocument SvgDocument, Random r)
+        public override void DoApply()
         {
-            R = r;
-            ColorManager = new ColorManager(R);
-
             float minCoaSize = 0.5f;
             float maxCoaSize = 0.95f;
             CoatOfArmsSize = RandomRange(minCoaSize * FlagHeight, maxCoaSize * FlagHeight);
@@ -51,8 +48,8 @@ namespace FlagGeneration
 
                     Vector2[] triangle1 = new Vector2[] { new Vector2(0, 0), new Vector2(FlagWidth, 0), new Vector2(0, FlagHeight) };
                     Vector2[] triangle2 = new Vector2[] { new Vector2(0, FlagHeight), new Vector2(FlagWidth, 0), new Vector2(FlagWidth, FlagHeight) };
-                    DrawPolygon(SvgDocument, triangle1, c1);
-                    DrawPolygon(SvgDocument, triangle2, c2);
+                    DrawPolygon(Svg, triangle1, c1);
+                    DrawPolygon(Svg, triangle2, c2);
 
                     // Double Split
                     if(R.NextDouble() < DOUBLE_SPLIT_CHANCE)
@@ -62,7 +59,7 @@ namespace FlagGeneration
                         float maxSplit2Start = 0.6f;
                         float split2Start = RandomRange(minSplit2Start, maxSplit2Start);
                         Vector2[] triangle3 = new Vector2[] { new Vector2(FlagWidth * split2Start, FlagHeight), new Vector2(FlagWidth, FlagHeight * split2Start), new Vector2(FlagWidth, FlagHeight) };
-                        DrawPolygon(SvgDocument, triangle3, c3);
+                        DrawPolygon(Svg, triangle3, c3);
 
                         CoatOfArmsPrimaryColor = ColorManager.GetRandomColor(new List<Color>() { c1 });
                         minCoaSize = 0.2f;
@@ -82,7 +79,7 @@ namespace FlagGeneration
                     }
 
                     // Coa
-                    if (R.NextDouble() < SPLIT_COA_CHANCE) ApplyCoatOfArms(SvgDocument);
+                    if (R.NextDouble() < SPLIT_COA_CHANCE) ApplyCoatOfArms(Svg);
                     break;
             }
 

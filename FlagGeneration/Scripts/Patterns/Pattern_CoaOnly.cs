@@ -31,11 +31,8 @@ namespace FlagGeneration
         private const float MAX_FRAME_SIZE = 0.3f; // relative to flag height
         private const float MAX_DIAMOND_FRAME_SIZE = 0.3f; // relative to flag height
 
-        public override void Apply(SvgDocument SvgDocument, Random r)
+        public override void DoApply()
         {
-            R = r;
-            ColorManager = new ColorManager(R);
-
             Style style = GetRandomStyle();
 
             CoatOfArmsPosition = FlagCenter;
@@ -50,7 +47,7 @@ namespace FlagGeneration
                     CoatOfArmsPrimaryColor = ColorManager.GetRandomColor(new List<Color>() { bgColor });
                     minCoaSizeRel = 0.6f;
                     maxCoaSizeRel = 0.95f;
-                    DrawRectangle(SvgDocument, 0, 0, FlagWidth, FlagHeight, bgColor);
+                    DrawRectangle(Svg, 0, 0, FlagWidth, FlagHeight, bgColor);
                     break;
 
                 case Style.Frame:
@@ -62,9 +59,9 @@ namespace FlagGeneration
 
                     float frameHeightRel = RandomRange(MIN_FRAME_SIZE, MAX_FRAME_SIZE);
                     float frameSize = frameHeightRel * FlagHeight;
-                    DrawRectangle(SvgDocument, 0, 0, FlagWidth, FlagHeight, bgColor);
+                    DrawRectangle(Svg, 0, 0, FlagWidth, FlagHeight, bgColor);
                     // Frame
-                    DrawRectangle(SvgDocument, frameSize, frameSize, FlagWidth - 2*frameSize, FlagHeight - 2*frameSize, secColor);
+                    DrawRectangle(Svg, frameSize, frameSize, FlagWidth - 2*frameSize, FlagHeight - 2*frameSize, secColor);
 
                     minCoaSizeRel = 0.3f;
                     maxCoaSizeRel = 1f - (2f * frameHeightRel);
@@ -81,7 +78,7 @@ namespace FlagGeneration
                     float frameSizeYRel = RandomRange(0f, MAX_DIAMOND_FRAME_SIZE);
                     float frameSizeX = frameSizeXRel * FlagWidth;
                     float frameSizeY = frameSizeYRel * FlagHeight;
-                    DrawRectangle(SvgDocument, 0, 0, FlagWidth, FlagHeight, bgColor);
+                    DrawRectangle(Svg, 0, 0, FlagWidth, FlagHeight, bgColor);
                     // Frame
                     Vector2[] vertices = new Vector2[]
                     {
@@ -90,7 +87,7 @@ namespace FlagGeneration
                         new Vector2(FlagWidth/2, FlagHeight - frameSizeY),
                         new Vector2(frameSizeX, FlagHeight/2)
                     };
-                    DrawPolygon(SvgDocument, vertices, secColor);
+                    DrawPolygon(Svg, vertices, secColor);
 
                     minCoaSizeRel = 0.3f;
                     maxCoaSizeRel = 1f - (3 * Math.Max(frameSizeXRel, frameSizeYRel));
@@ -103,7 +100,7 @@ namespace FlagGeneration
             float maxCoaSize = FlagHeight * maxCoaSizeRel;
             CoatOfArmsSize = RandomRange(minCoaSize, maxCoaSize);
 
-            ApplyCoatOfArms(SvgDocument);
+            ApplyCoatOfArms(Svg);
         }
 
         public Style GetRandomStyle()

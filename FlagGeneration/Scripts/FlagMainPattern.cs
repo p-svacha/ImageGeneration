@@ -16,10 +16,10 @@ namespace FlagGeneration
         // General chances of coat of arms and symbol types appearing
         protected Dictionary<CoatOfArms, int> CoatOfArms = new Dictionary<CoatOfArms, int>()
         {
-            { new PrefabCoa(), 100 },
-            { new SingleSymbolCoa(), 100 },
-            { new FramedCoa(), 50 },
-            { new SymbolCircleCoa(), 60 },
+            { new Coa_Prefab(), 100 },
+            { new Coa_SingleSymbol(), 100 },
+            { new Coa_Framed(), 50 },
+            { new Coa_SymbolCircle(), 60 },
         };
         protected Dictionary<string, int> Symbols = new Dictionary<string, int>() // Symbols also have to be added in GetRandomSymbol()
         {
@@ -44,7 +44,16 @@ namespace FlagGeneration
         protected Vector2 CoatOfArmsPosition;    // Absolute position
         protected float CoatOfArmsSize;         // Absolute size
 
-        public abstract void Apply(SvgDocument SvgDocument, Random r);
+        public void ApplyPattern(SvgDocument SvgDocument, Random r)
+        {
+            Svg = SvgDocument;
+            R = r;
+            ColorManager = new ColorManager(R);
+            FlagColors.Clear();
+            DoApply();
+        }
+
+        public abstract void DoApply();
 
         protected void ApplyCoatOfArms(SvgDocument SvgDocument)
         {
@@ -54,7 +63,7 @@ namespace FlagGeneration
 
         public void DrawRectangle(SvgDocument SvgDocument, float startX, float startY, float width, float height, Color c)
         {
-            AddUsedColor(c);
+            AddFlagColor(c);
             SvgRectangle svgRectangle = new SvgRectangle()
             {
                 X = startX,
@@ -68,7 +77,7 @@ namespace FlagGeneration
 
         public void DrawPolygon(SvgDocument SvgDocument, Vector2[] vertices, Color c)
         {
-            AddUsedColor(c);
+            AddFlagColor(c);
             SvgPointCollection points = new SvgPointCollection();
             foreach (Vector2 p in vertices)
             {
@@ -87,7 +96,7 @@ namespace FlagGeneration
 
         public void DrawCircle(SvgDocument SvgDocument, Vector2 center, float radius, Color c)
         {
-            AddUsedColor(c);
+            AddFlagColor(c);
             SvgCircle SvgCircle = new SvgCircle()
             {
                 CenterX = center.X,
@@ -133,7 +142,7 @@ namespace FlagGeneration
 
         }
 
-        private void AddUsedColor(Color c)
+        private void AddFlagColor(Color c)
         {
             if (!FlagColors.Contains(c)) FlagColors.Add(c);
         }
@@ -173,16 +182,16 @@ namespace FlagGeneration
                     switch(kvp.Key)
                     {
                         case "DefaultStar":
-                            return new Default_Star(this, R);
+                            return new Symbol_Default_Star(this, R);
 
                         case "Circle":
-                            return new Circle(this, R);
+                            return new Symbol_Circle(this, R);
 
                         case "SpecialStar":
-                            return new Special_Star(this, R);
+                            return new Symbol_Special_Star(this, R);
 
                         case "Cross":
-                            return new Cross(this, R);
+                            return new Symbol_Cross(this, R);
                     }
                 }
             }

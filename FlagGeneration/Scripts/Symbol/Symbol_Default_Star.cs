@@ -10,9 +10,9 @@ using static FlagGeneration.Geometry;
 
 namespace FlagGeneration
 {
-    class Default_Star : Symbol
+    class Symbol_Default_Star : Symbol
     {
-        public Default_Star(FlagMainPattern flag, Random R) : base(flag, R) { }
+        public Symbol_Default_Star(FlagMainPattern flag, Random R) : base(flag, R) { }
 
         public override void Draw(SvgDocument Svg, Vector2 center, float size, float angle, Color primaryColor, Color secondaryColor)
         {

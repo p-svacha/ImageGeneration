@@ -60,17 +60,15 @@ namespace FlagGeneration
             {StripeStyle.ThroughCenter, 70}
         };
 
-        public override void Apply(SvgDocument SvgDocument, Random r)
+        public override void DoApply()
         {
-            R = r;
-            ColorManager = new ColorManager(R);
-
+            Hitboxes.Clear();
             Color backgroundColor = ColorManager.GetRandomColor();
 
             int numSymbols = GetWeightedRandomInt(NumSymbols);
             bool hasSymbols = numSymbols > 0;
 
-            DrawRectangle(SvgDocument, 0, 0, FlagWidth, FlagHeight, backgroundColor);
+            DrawRectangle(Svg, 0, 0, FlagWidth, FlagHeight, backgroundColor);
 
             // Stripes (when there are no symbols there are always stripes)
             int minStripes = hasSymbols ? MIN_STRIPES : 1;
@@ -81,13 +79,11 @@ namespace FlagGeneration
             List<Color> stripeColors = new List<Color>();
             for (int i = 0; i < numStripes; i++)
             {
-                Color stripeColor = ColorManager.GetRandomColor(FlagColors);
+                Color stripeColor = ColorManager.GetRandomColor(FlagColors.Concat(stripeColors).ToList());
                 if (i == 2 && R.NextDouble() < 0.5f) stripeColor = stripeColors[0];
                 stripeColors.Add(stripeColor);
             }
-            List<Vector2> stripeLine = DrawStripes(SvgDocument, numStripes, thickness, stripeColors.ToArray(), stripeStyle);
-
-
+            List<Vector2> stripeLine = DrawStripes(Svg, numStripes, thickness, stripeColors.ToArray(), stripeStyle);
 
             // Symbols
             Symbol symbol = GetRandomSymbol();
@@ -96,7 +92,6 @@ namespace FlagGeneration
             candidateColors.Add(ColorManager.GetRandomColor(FlagColors));
             Color symbolColor = candidateColors[R.Next(0, candidateColors.Count)];
             Color symbolColorSecondary = ColorManager.GetSecondaryColor(symbolColor, FlagColors);
-            if(hasSymbols) FlagColors.Add(symbolColor);
 
             float angle = 0;
             if (R.NextDouble() < FIXED_RANDOM_ANGLE_CHANCE) angle = RandomRange(0, 360);
@@ -112,7 +107,7 @@ namespace FlagGeneration
 
                 do
                 {
-                    if (counter >= 50) stop = true;
+                    if (counter >= 100) stop = true;
                     size = RandomRange(MIN_SYMBOL_SIZE, MAX_SYMBOL_SIZE);
                     xPos = RandomRange(size, FlagWidth - size);
                     yPos = RandomRange(size, FlagHeight - size);
@@ -132,12 +127,12 @@ namespace FlagGeneration
                 {
                     Hitboxes.Add(hitbox);
                     if (individualRandomAngles) angle = RandomRange(0, 360);
-                    symbol.Draw(SvgDocument, new Vector2(xPos, yPos), size, angle, symbolColor, symbolColorSecondary);
+                    symbol.Draw(Svg, new Vector2(xPos, yPos), size, angle, symbolColor, symbolColorSecondary);
                 }
             }
 
             // Coat of arms
-            if(!hasSymbols && r.NextDouble() < COA_CHANCE)
+            if(!hasSymbols && R.NextDouble() < COA_CHANCE)
             {
                 CoatOfArmsPrimaryColor = ColorManager.GetRandomColor(FlagColors);
 
@@ -152,7 +147,7 @@ namespace FlagGeneration
                 float minCoaSize = Math.Min(MIN_COA_SIZE, maxCoaSize);
                 CoatOfArmsSize = RandomRange(minCoaSize, maxCoaSize);
 
-                ApplyCoatOfArms(SvgDocument);
+                ApplyCoatOfArms(Svg);
             }
         }
 
@@ -172,18 +167,41 @@ namespace FlagGeneration
 
             float totalThickness = numStripes * thickness;
 
+            bool wideMidStripe = (numStripes == 3 && R.NextDouble() < 0.2f);
+            float midThickness = RandomRange(0.7f, 2f) * thickness;
+            float sideThickness = (totalThickness - midThickness) / 2;
+
             for (int i = 0; i < numStripes; i++)
             {
                 float lineOffset = (-totalThickness * 0.5f) + (i * thickness) + (thickness * 0.5f);
+                float lineThickness = thickness;
+                if(wideMidStripe)
+                {
+                    if(i == 0)
+                    {
+                        lineThickness = sideThickness;
+                        lineOffset = (-totalThickness * 0.5f) + (sideThickness * 0.5f);
+                    }
+                    if(i == 1)
+                    {
+                        lineThickness = midThickness;
+                        lineOffset = (-totalThickness * 0.5f) + sideThickness + (midThickness * 0.5f);
+                    }
+                    if(i == 2)
+                    {
+                        lineThickness = sideThickness;
+                        lineOffset = (-totalThickness * 0.5f) + midThickness + (sideThickness * 1.5f);
+                    }
+                }
                 Vector2 lineStartPoint = new Vector2(startPoint.X + thicknessVector.X * lineOffset, startPoint.Y + thicknessVector.Y * lineOffset);
                 Vector2 lineEndPoint = new Vector2(endPoint.X + thicknessVector.X * lineOffset, endPoint.Y + thicknessVector.Y * lineOffset);
 
                 Vector2[] vertices = new Vector2[]
                 {
-                new Vector2(lineStartPoint.X + thicknessVector.X * thickness * 0.5f, lineStartPoint.Y + thicknessVector.Y * thickness * 0.5f),
-                new Vector2(lineEndPoint.X + thicknessVector.X * thickness * 0.5f, lineEndPoint.Y + thicknessVector.Y * thickness * 0.5f),
-                new Vector2(lineEndPoint.X - thicknessVector.X * thickness * 0.5f, lineEndPoint.Y - thicknessVector.Y * thickness * 0.5f),
-                new Vector2(lineStartPoint.X - thicknessVector.X * thickness * 0.5f, lineStartPoint.Y - thicknessVector.Y * thickness * 0.5f),
+                    new Vector2(lineStartPoint.X + thicknessVector.X * lineThickness * 0.5f, lineStartPoint.Y + thicknessVector.Y * lineThickness * 0.5f),
+                    new Vector2(lineEndPoint.X + thicknessVector.X * lineThickness * 0.5f, lineEndPoint.Y + thicknessVector.Y * lineThickness * 0.5f),
+                    new Vector2(lineEndPoint.X - thicknessVector.X * lineThickness * 0.5f, lineEndPoint.Y - thicknessVector.Y * lineThickness * 0.5f),
+                    new Vector2(lineStartPoint.X - thicknessVector.X * lineThickness * 0.5f, lineStartPoint.Y - thicknessVector.Y * lineThickness * 0.5f),
                 };
                 DrawPolygon(SvgDocument, vertices, colors[i]);
                 Hitboxes.Add(new Polygon(vertices.ToList()));

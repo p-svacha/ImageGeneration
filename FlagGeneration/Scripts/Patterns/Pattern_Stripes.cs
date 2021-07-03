@@ -78,11 +78,8 @@ namespace FlagGeneration
         public bool HasWideMidStripe;
         public StripeDirectionType StripeDirection;
 
-        public override void Apply(SvgDocument SvgDocument, Random r)
+        public override void DoApply()
         {
-            R = r;
-            ColorManager = new ColorManager(R);
-
             NumStripes = GetNumStripes();
 
             Color[] stripeColors = new Color[NumStripes];
@@ -141,7 +138,7 @@ namespace FlagGeneration
             {
                 float stripeSize = stripeSizes[i];
                 
-                DrawRectangle(SvgDocument,
+                DrawRectangle(Svg,
                     StripeDirection == StripeDirectionType.Horizontal ? 0 : curRel * FlagWidth,
                     StripeDirection == StripeDirectionType.Horizontal ? curRel * FlagHeight : 0,
                     StripeDirection == StripeDirectionType.Horizontal ? FlagWidth : FlagWidth * stripeSize,
@@ -176,7 +173,7 @@ namespace FlagGeneration
                         for(int i = 0; i < numSymbols; i++)
                         {
                             Vector2 position = new Vector2(StripeDirection == StripeDirectionType.Horizontal ? (i + 1) * relStepSize * FlagWidth : FlagCenter.X, StripeDirection == StripeDirectionType.Horizontal ? FlagCenter.Y : (i + 1) * relStepSize * FlagHeight);
-                            symbol.Draw(SvgDocument, position, StripeDirection == StripeDirectionType.Horizontal ? symbolRelSize * FlagHeight : symbolRelSize * FlagHeight, 0, symbolColor, symbolSecondaryColor);
+                            symbol.Draw(Svg, position, StripeDirection == StripeDirectionType.Horizontal ? symbolRelSize * FlagHeight : symbolRelSize * FlagHeight, 0, symbolColor, symbolSecondaryColor);
                         }
 
                     }
@@ -202,7 +199,7 @@ namespace FlagGeneration
                         candidateColors.Add(ColorManager.GetRandomColor(forbiddenCoaColors));
                         CoatOfArmsPrimaryColor = candidateColors[R.Next(0, candidateColors.Count)];
 
-                        ApplyCoatOfArms(SvgDocument);
+                        ApplyCoatOfArms(Svg);
                     }
                     break;
 
@@ -227,7 +224,7 @@ namespace FlagGeneration
                         }
                         
                     }
-                    DrawRectangle(SvgDocument, 0, 0, rectWidth, rectHeight, squareColor);
+                    DrawRectangle(Svg, 0, 0, rectWidth, rectHeight, squareColor);
 
                     // Coa (33% symbols, 33% coa, 33% nothing)
                     float coaRng = (float)R.NextDouble();
@@ -238,7 +235,7 @@ namespace FlagGeneration
                         foreach (Color c in stripeColors) if (!candidateColors.Contains(c)) candidateColors.Add(c);
                         candidateColors.Add(ColorManager.GetRandomColor(new List<Color>() { squareColor }));
                         Color symbolColor = candidateColors[R.Next(0, candidateColors.Count)];
-                        FillRectangleWithSymbols(SvgDocument, symbolColor, new Vector2(0, 0), rectWidth, rectHeight);
+                        FillRectangleWithSymbols(Svg, symbolColor, new Vector2(0, 0), rectWidth, rectHeight);
                     }
                     else if(coaRng < 0.66f)
                     {
@@ -251,7 +248,7 @@ namespace FlagGeneration
                         candidateColors.Add(ColorManager.GetRandomColor(new List<Color>() { squareColor }));
                         CoatOfArmsPrimaryColor = candidateColors[R.Next(0, candidateColors.Count)];
 
-                        ApplyCoatOfArms(SvgDocument);
+                        ApplyCoatOfArms(Svg);
                     }
 
                     break;
@@ -266,7 +263,7 @@ namespace FlagGeneration
                     {
                     new Vector2(0,0), new Vector2(triangleWidth * FlagWidth, FlagHeight/2), new Vector2(0, FlagHeight)
                     };
-                    DrawPolygon(SvgDocument, vertices, triangleColor);
+                    DrawPolygon(Svg, vertices, triangleColor);
 
                     // Coa
                     if (R.NextDouble() < COA_CHANCE)
@@ -279,7 +276,7 @@ namespace FlagGeneration
 
                         CoatOfArmsPrimaryColor = ColorManager.GetRandomColor(new List<Color>() { triangleColor });
 
-                        ApplyCoatOfArms(SvgDocument);
+                        ApplyCoatOfArms(Svg);
                     }
                     break;
 
@@ -287,8 +284,8 @@ namespace FlagGeneration
                     Color overlayColor = ColorManager.GetRandomColor(stripeColors.ToList());
                     Vector2[] triangle1 = new Vector2[] { new Vector2(0, 0), new Vector2(FlagWidth / 2, FlagHeight), new Vector2(0, FlagHeight) };
                     Vector2[] triangle2 = new Vector2[] { new Vector2(FlagWidth, 0), new Vector2(FlagWidth / 2, FlagHeight), new Vector2(FlagWidth, FlagHeight) };
-                    DrawPolygon(SvgDocument, triangle1, overlayColor);
-                    DrawPolygon(SvgDocument, triangle2, overlayColor);
+                    DrawPolygon(Svg, triangle1, overlayColor);
+                    DrawPolygon(Svg, triangle2, overlayColor);
 
                     // Coa
                     if (R.NextDouble() < COA_CHANCE)
@@ -301,7 +298,7 @@ namespace FlagGeneration
 
                         CoatOfArmsPrimaryColor = ColorManager.GetRandomColor(stripeColors.ToList());
 
-                        ApplyCoatOfArms(SvgDocument);
+                        ApplyCoatOfArms(Svg);
                     }
                     break;
             }

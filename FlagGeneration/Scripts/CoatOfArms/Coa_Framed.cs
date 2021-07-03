@@ -12,7 +12,7 @@ using static FlagGeneration.Geometry;
 
 namespace FlagGeneration
 {
-    class FramedCoa : CoatOfArms
+    class Coa_Framed : CoatOfArms
     {
         private enum FrameType
         {

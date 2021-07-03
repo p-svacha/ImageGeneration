@@ -10,7 +10,7 @@ using static FlagGeneration.Geometry;
 
 namespace FlagGeneration
 {
-    class Special_Star : Symbol
+    class Symbol_Special_Star : Symbol
     {
         private readonly Dictionary<int, int> NumSpikesDictionary = new Dictionary<int, int>()
         {
@@ -39,7 +39,7 @@ namespace FlagGeneration
         private bool HalfStar;
         private bool HalfStarMoved;
 
-        public Special_Star(FlagMainPattern flag, Random R) : base(flag, R)
+        public Symbol_Special_Star(FlagMainPattern flag, Random R) : base(flag, R)
         {
             NumSpikes = GetNumSpikes(R);
             RadiusRatio = RandomRange(MIN_RADIUS_RATIO, MAX_RADIUS_RATIO);
