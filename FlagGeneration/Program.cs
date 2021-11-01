@@ -40,11 +40,12 @@ namespace FlagGeneration
                 for(int i = 0; i < intParam; i++)
                 {
                     string fileName = i + ".png";
+                    string fullPath = SavePath + "/" + fileName;
                     int seed = seedRng.Next(Int32.MinValue, Int32.MaxValue);
-                    System.Console.WriteLine(fileName + " with seed " + seed);
+                    System.Console.WriteLine("Saving " + fullPath + " with seed " + seed);
 
                     SvgDocument Svg = Gen.GenerateFlag(seed);
-                    Svg.Draw().Save(SavePath + fileName);
+                    Svg.Draw().Save(fullPath);
                 }
             }
 

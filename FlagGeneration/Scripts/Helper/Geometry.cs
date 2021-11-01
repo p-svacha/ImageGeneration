@@ -36,5 +36,17 @@ namespace FlagGeneration
                     cosTheta * (pointToRotate.Y - centerPoint.Y) + centerPoint.Y)
             };
         }
+
+        /// <summary>
+        /// Returns the height of a right angled triangle, where c is the point with the right angle
+        /// </summary>
+        public static float GetTriangleHeight(Vector2 pointA, Vector2 pointB, Vector2 pointC)
+        {
+            float AC = (pointC - pointA).Length();
+            float AB = (pointB - pointA).Length();
+            float q = (float)(Math.Pow(AC, 2) / AB);
+            float h = (float) Math.Sqrt(Math.Pow(AC, 2) - Math.Pow(q, 2));
+            return h;
+        }
     }
 }

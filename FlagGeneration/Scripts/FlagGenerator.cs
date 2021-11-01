@@ -21,6 +21,7 @@ namespace FlagGeneration
             { new Pattern_Diagonal(), 20 },
             { new Pattern_Cross(), 80 },
             { new Pattern_ScatteredStripesAndSymbols(), 50 },
+            { new Pattern_Checkers(), 10 },
         };
 
         public SvgDocument GenerateFlag()
