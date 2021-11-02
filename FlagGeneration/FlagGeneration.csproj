@@ -60,6 +60,7 @@
     <Compile Include="Scripts\CoatOfArms\Coa_SingleSymbol.cs" />
     <Compile Include="Scripts\CoatOfArms\Coa_Prefab.cs" />
     <Compile Include="Scripts\Patterns\Pattern_Checkers.cs" />
+    <Compile Include="Scripts\Patterns\Pattern_Rays.cs" />
     <Compile Include="Scripts\Patterns\Pattern_ScatteredStripesAndSymbols.cs" />
     <Compile Include="Scripts\Patterns\Pattern_Cross.cs" />
     <Compile Include="Scripts\Patterns\Pattern_Diagonal.cs" />

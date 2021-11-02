@@ -18,10 +18,11 @@ namespace FlagGeneration
         {
             { new Pattern_Stripes(), 100 },
             { new Pattern_CoaOnly(), 60 },
-            { new Pattern_Diagonal(), 20 },
+            { new Pattern_Diagonal(), 15 },
             { new Pattern_Cross(), 80 },
             { new Pattern_ScatteredStripesAndSymbols(), 50 },
-            { new Pattern_Checkers(), 10 },
+            { new Pattern_Checkers(), 20 },
+            { new Pattern_Rays(), 25 }
         };
 
         public SvgDocument GenerateFlag()

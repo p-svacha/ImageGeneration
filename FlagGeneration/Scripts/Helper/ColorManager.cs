@@ -55,6 +55,16 @@ namespace FlagGeneration
         }
 
         /// <summary>
+        /// Returns a list of x colors without duplicates.
+        /// </summary>
+        public List<Color> GetRandomColors(int amount)
+        {
+            List<Color> colors = new List<Color>();
+            for (int i = 0; i < amount; i++) colors.Add(GetRandomColor(colors));
+            return colors;
+        }
+
+        /// <summary>
         /// Returns a secondary color (usually for a framed symbol or coa). It will be unlike the primary color and have a good chance to be a color that is already used in flagColors, but in can also be a random one.
         /// </summary>
         public Color GetSecondaryColor(Color primaryColor, List<Color> flagColors)

@@ -20,6 +20,7 @@ namespace FlagGeneration
         {
             string[] files = Directory.GetFiles(Path.GetDirectoryName(Program.SavePath) + "/Resources/CoatOfArms");
             string chosenPath = files[R.Next(files.Length)];
+            Console.WriteLine("Coa prefab id = " + chosenPath);
 
             SvgDocument prefab = SvgDocument.Open(chosenPath);
             prefab.Width = size;
