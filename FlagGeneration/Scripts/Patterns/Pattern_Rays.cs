@@ -19,11 +19,11 @@ namespace FlagGeneration
         private const float ALTERNATE_ANGLE_OFFSET_MAX = 0.4f; // of anglestep
 
         // Chances
-        private const float CENTER_DOUBLE_RAY_CHANCE = 0.65f; // Chance to double rays when origin is center
+        private const float CENTER_DOUBLE_RAY_CHANCE = 0.7f; // Chance to double rays when origin is center
 
         // Origin Overlay
         private const float RAY_ORIGIN_CIRCLE_CHANCE = 0.5f;
-        private const float RAY_ORIGIN__INNER_CIRCLE_CHANCE = 0.5f;
+        private const float RAY_ORIGIN_INNER_CIRCLE_CHANCE = 0.5f;
         private const float RAY_ORIGIN_CIRCLE_UNIQUE_COLOR_CHANCE = 0.3f;
         private const float RAY_ORIGIN_CIRCLE_SIZE_MIN = FlagHeight * 0.07f;
         private const float RAY_ORIGIN_CIRCLE_SIZE_MAX = FlagHeight * 0.3f;
@@ -32,11 +32,11 @@ namespace FlagGeneration
         private Dictionary<int, int> NumRays = new Dictionary<int, int>()
         {
             {3, 30},
-            {4, 30},
+            {4, 20},
             {5, 70},
-            {6, 35},
+            {6, 15},
             {7, 50},
-            {8, 30},
+            {8, 10},
             {9, 25},
             {10, 12},
             {11, 12},
@@ -145,7 +145,7 @@ namespace FlagGeneration
 
                 DrawCircle(Svg, origin, circleRadius, circleColor);
 
-                if (R.NextDouble() < RAY_ORIGIN_CIRCLE_CHANCE)
+                if (R.NextDouble() < RAY_ORIGIN_INNER_CIRCLE_CHANCE)
                 {
                     Color innerColor = ColorManager.GetSecondaryColor(circleColor, FlagColors);
 
