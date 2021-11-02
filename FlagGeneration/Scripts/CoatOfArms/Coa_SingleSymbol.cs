@@ -13,11 +13,17 @@ namespace FlagGeneration
 {
     class Coa_SingleSymbol : CoatOfArms
     {
+        private const float TILT_CHANCE = 0.1f; // Chance that the symbol is rotated a random amount
+
         public override void Draw(SvgDocument Svg, FlagMainPattern flag, Random R, Vector2 pos, float size, Color primaryColor, List<Color> flagColors)
         {
             Symbol symbol = flag.GetRandomSymbol();
             Color secondaryColor = flag.ColorManager.GetSecondaryColor(primaryColor, flagColors);
-            symbol.Draw(Svg, pos, size, 0, primaryColor, secondaryColor);
+
+            float angle = 0f;
+            if (R.NextDouble() < TILT_CHANCE) angle = R.Next(0, 360);
+
+            symbol.Draw(Svg, pos, size, angle, primaryColor, secondaryColor);
         }
     }
 }

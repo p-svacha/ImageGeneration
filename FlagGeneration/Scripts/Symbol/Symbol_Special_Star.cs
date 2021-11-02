@@ -31,7 +31,7 @@ namespace FlagGeneration
         private const float MIN_RADIUS_RATIO = 0.05f;
         private const float MAX_RADIUS_RATIO = 0.8f;
 
-        private const float HALF_STAR_CHANCE = 0.1f;
+        private const float HALF_STAR_CHANCE = 0.07f;
 
         // Instance values
         private int NumSpikes;
@@ -44,7 +44,7 @@ namespace FlagGeneration
             NumSpikes = GetNumSpikes(R);
             RadiusRatio = RandomRange(MIN_RADIUS_RATIO, MAX_RADIUS_RATIO);
             HalfStar = R.NextDouble() < HALF_STAR_CHANCE;
-            HalfStarMoved = R.NextDouble() < 0.5f;
+            HalfStarMoved = R.NextDouble() < 0.7f;
         }
 
         public override void Draw(SvgDocument Svg, Vector2 center, float size, float angle, Color primaryColor, Color secondaryColor)

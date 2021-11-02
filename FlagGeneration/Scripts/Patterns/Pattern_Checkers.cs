@@ -228,7 +228,6 @@ namespace FlagGeneration
             float symbolMaxSize = Geometry.GetTriangleHeight(new Vector2(diamondWidth, 0), new Vector2(0, diamondHeight), new Vector2(0, 0));
             float symbolMinSize = symbolMaxSize * 0.4f;
             float symbolSize = RandomRange(symbolMinSize, symbolMaxSize);
-            Console.WriteLine("X:" + numTilesX + ", Y:" + numTilesY + ", Shifterd:" + isShifted);
 
             switch (symbolPattern)
             {

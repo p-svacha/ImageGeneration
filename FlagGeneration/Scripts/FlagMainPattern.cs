@@ -29,6 +29,20 @@ namespace FlagGeneration
             { "Cross", 20 }
         };
 
+        // Chance of different line modifiers appearing
+        protected enum LineModifierType
+        {
+            Rectangles,
+            Spikes,
+            Hook
+        }
+        protected Dictionary<LineModifierType, int> LineModifiers = new Dictionary<LineModifierType, int>()
+        {
+            { LineModifierType.Rectangles, 100 },
+            { LineModifierType.Spikes, 60 },
+            { LineModifierType.Hook, 80 },
+        };
+
         // Flag Attributes
         protected SvgDocument Svg;
         protected Random R;
@@ -36,6 +50,7 @@ namespace FlagGeneration
         protected const float FlagWidth = FlagGenerator.FLAG_WIDTH;
         protected const float FlagHeight = FlagGenerator.FLAG_HEIGHT;
         protected static Vector2 FlagCenter = new Vector2(FlagWidth / 2f, FlagHeight / 2f);
+        protected static Vector2 FlagDimensions = new Vector2(FlagWidth, FlagHeight);
 
         protected List<Color> FlagColors = new List<Color>(); // Base colors of the flag, without symbols and coat of arms
 
@@ -140,6 +155,64 @@ namespace FlagGeneration
                 }
             }
 
+        }
+
+        /// <summary>
+        /// Modifies a line from startPoint to endPoint with a given thickness with a certain pattern that extends the thickness of the line by modifierWidth
+        /// </summary>
+        protected void EnhanceLine(SvgDocument Svg, Vector2 startPoint, Vector2 endPoint, float lineThickness, LineModifierType modifierType, int numRepeats, float modifierWidth, Color lineColor)
+        {
+            Vector2 line = endPoint - startPoint;
+            float lineLength = line.Length();
+            float step = lineLength / (numRepeats * 2 + 1);
+            for (int i = 0; i < numRepeats; i++)
+            {
+                Vector2 patternStartMidPoint = startPoint + line / lineLength * ((2 * i + 1) * step);
+                Vector2 patternEndMidPoint = startPoint + line / lineLength * ((2 * i + 2) * step);
+                Vector2 patternMidPoint = (patternStartMidPoint + patternEndMidPoint) / 2;
+                if (modifierType == LineModifierType.Rectangles)
+                {
+                    Vector2[] vertices =
+                    {
+                        patternStartMidPoint + Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2 + modifierWidth),
+                        patternEndMidPoint + Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2 + modifierWidth),
+                        patternEndMidPoint - Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2 + modifierWidth),
+                        patternStartMidPoint - Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2 + modifierWidth),
+                    };
+                    DrawPolygon(Svg, vertices, lineColor);
+                }
+                else if(modifierType == LineModifierType.Spikes)
+                {
+                    Vector2[] vertices =
+                    {
+                        patternStartMidPoint + Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2),
+                        patternMidPoint + Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2 + modifierWidth * 1.5f),
+                        patternEndMidPoint + Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2),
+                        patternEndMidPoint - Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2),
+                        patternMidPoint - Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2 + modifierWidth * 1.5f),
+                        patternStartMidPoint - Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2),
+                    };
+                    DrawPolygon(Svg, vertices, lineColor);
+                }
+                else if (modifierType == LineModifierType.Hook)
+                {
+                    float offset = 30;
+                    Vector2 hookMidStart = patternStartMidPoint - Vector2.Normalize(line) * offset;
+                    Vector2 hookMidEnd = patternEndMidPoint - Vector2.Normalize(line) * offset;
+                    Vector2[] vertices =
+                    {
+                        patternStartMidPoint + Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2),
+                        hookMidStart + Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2 + modifierWidth),
+                        hookMidEnd + Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2 + modifierWidth),
+                        patternEndMidPoint + Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2),
+                        patternEndMidPoint - Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2),
+                        hookMidEnd - Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2 + modifierWidth),
+                        hookMidStart - Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2 + modifierWidth),
+                        patternStartMidPoint - Vector2.Normalize(new Vector2(line.Y, -line.X)) * (lineThickness / 2),
+                    };
+                    DrawPolygon(Svg, vertices, lineColor);
+                }
+            }
         }
 
         private void AddFlagColor(Color c)

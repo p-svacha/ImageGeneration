@@ -12,10 +12,5 @@ namespace FlagGeneration
     public abstract class CoatOfArms
     {
         public abstract void Draw(SvgDocument Svg, FlagMainPattern flag, Random R, Vector2 pos, float size, Color primaryColor, List<Color> flagColors = null);
-
-        protected void DrawCoa()
-        {
-
-        }
     }
 }
