@@ -94,7 +94,7 @@ namespace FlagGeneration
             Color symbolColorSecondary = ColorManager.GetSecondaryColor(symbolColor, FlagColors);
 
             float angle = 0;
-            if (R.NextDouble() < FIXED_RANDOM_ANGLE_CHANCE) angle = RandomRange(0, 360);
+            if (R.NextDouble() < FIXED_RANDOM_ANGLE_CHANCE) angle = RandomRange(0, 359);
             bool individualRandomAngles = R.NextDouble() < INDIVIDUAL_RANDOM_ANGLE_CHANCE;
 
             for (int i = 0; i < numSymbols; i++)
@@ -126,7 +126,7 @@ namespace FlagGeneration
                 if (!stop)
                 {
                     Hitboxes.Add(hitbox);
-                    if (individualRandomAngles) angle = RandomRange(0, 360);
+                    if (individualRandomAngles) angle = RandomRange(0, 359);
                     symbol.Draw(Svg, new Vector2(xPos, yPos), size, angle, symbolColor, symbolColorSecondary);
                 }
             }

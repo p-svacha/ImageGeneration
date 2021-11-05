@@ -39,7 +39,7 @@ namespace FlagGeneration
             for(int i = 0; i < numSymbols; i++)
             {
                 float angle = startAngle + i * angleStep;
-                Vector2 position = flag.GetPointOnCircle(pos, radius, angle);
+                Vector2 position = Geometry.GetPointOnCircle(pos, radius, angle);
                 float symbolAngle = hasStaticAngle ? 0 : angle;
                 symbol.Draw(Svg, position, symbolSize, symbolAngle, primaryColor, secondaryColor);
             }

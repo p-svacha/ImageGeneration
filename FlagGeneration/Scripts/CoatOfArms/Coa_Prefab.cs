@@ -18,7 +18,8 @@ namespace FlagGeneration
     {
         public override void Draw(SvgDocument Svg, FlagMainPattern flag, Random R, Vector2 pos, float size, Color primaryColor, List<Color> flagColors)
         {
-            string[] files = Directory.GetFiles(Path.GetDirectoryName(Program.SavePath) + "/Resources/CoatOfArms");
+            string prefabPath = AppContext.BaseDirectory + "../../Resources/CoatOfArms";
+            string[] files = Directory.GetFiles(prefabPath);
             string chosenPath = files[R.Next(files.Length)];
             Console.WriteLine("Coa prefab id = " + chosenPath);
 

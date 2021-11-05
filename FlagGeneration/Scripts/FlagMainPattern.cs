@@ -1,4 +1,5 @@
 ﻿using Svg;
+using Svg.Pathing;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace FlagGeneration
             { new Coa_SingleSymbol(), 100 },
             { new Coa_Framed(), 50 },
             { new Coa_SymbolCircle(), 60 },
+            { new Coa_GeneratedSymbol(), 30 }
         };
         protected Dictionary<string, int> Symbols = new Dictionary<string, int>() // Symbols also have to be added in GetRandomSymbol()
         {
@@ -121,6 +123,66 @@ namespace FlagGeneration
             };
             SvgDocument.Children.Add(SvgCircle);
         }
+
+        public void DrawMoon(SvgDocument SvgDocument, Vector2 position, float outerRadius, float innerRadius, float innerOffset, float angle, Color c)
+        {
+            AddFlagColor(c);
+
+            // Calculate all relevant points
+            Vector2 outerCenter = position;
+            Vector2 innerCenter = Geometry.GetPointOnCircle(outerCenter, innerOffset, angle);
+            List<Vector2> moonEnds = Geometry.FindCircleCircleIntersections(outerCenter, outerRadius, innerCenter, innerRadius);
+            if (moonEnds.Count != 2) throw new Exception("No moon end points found with values:\nPosition: " + position + "\nOuterRadius: " + outerRadius + "\nInnerOffset: " + innerOffset + "\nInnerCenter: " + innerCenter + "\nInnerRadius: " + innerRadius);
+
+            // Draw shape
+            SvgPath svgPath = new SvgPath()
+            {
+                Fill = new SvgColourServer(c),
+                StrokeWidth = 0,
+            };
+            svgPath.PathData = new SvgPathSegmentList();
+
+            PointF startPoint = new PointF(moonEnds[0].X, moonEnds[0].Y);
+            PointF endPoint = new PointF(moonEnds[1].X, moonEnds[1].Y);
+            SvgMoveToSegment svgStartMove = new SvgMoveToSegment(startPoint);
+            svgPath.PathData.Add(svgStartMove);
+
+            SvgArcSegment outerArc = new SvgArcSegment(startPoint, outerRadius, outerRadius, 0, SvgArcSize.Large, SvgArcSweep.Negative, endPoint);
+            svgPath.PathData.Add(outerArc);
+
+            SvgArcSegment innerArc = new SvgArcSegment(endPoint, innerRadius, innerRadius, 0, SvgArcSize.Small, SvgArcSweep.Positive, startPoint);
+            svgPath.PathData.Add(innerArc);
+            
+            SvgDocument.Children.Add(svgPath);
+        }
+
+        public void DrawStar(SvgDocument SvgDocument, Vector2 position, int numCorners, float angle, float outerRadius, float innerRadius, Color c)
+        {
+            float startAngle = angle + 180;
+
+            int numVertices = numCorners * 2;
+            Vector2[] vertices = new Vector2[numVertices];
+
+            // Create vertices
+            float angleStep = 360f / numVertices;
+            for (int i = 0; i < numVertices; i++)
+            {
+                float curAngle = startAngle + (i * angleStep);
+                bool outerCorner = i % 2 == 0;
+                float radius = outerCorner ? outerRadius : innerRadius;
+                float x = position.X + (float)(radius * Math.Sin(Geometry.DegreeToRadian(curAngle)));
+                float y = position.Y + (float)(radius * Math.Cos(Geometry.DegreeToRadian(curAngle)));
+                vertices[i] = new Vector2(x, y);
+            }
+
+            DrawPolygon(SvgDocument, vertices, c);
+        }
+
+        public void DrawDefaultStar(SvgDocument SvgDocument, Vector2 position, float radius, float angle, Color c)
+        {
+            DrawStar(SvgDocument, position, 5, angle, radius, radius * 0.4f, c);
+        }
+
 
         protected const float MIN_FILLED_SYMBOL_SIZE = FlagHeight * 0.05f;
         /// <summary>
@@ -301,12 +363,6 @@ namespace FlagGeneration
         public float DegToRad(float angle)
         {
             return (float)((Math.PI / 180f) * angle);
-        }
-        public Vector2 GetPointOnCircle(Vector2 center, float radius, float angle)
-        {
-            float x = (float)(center.X + Math.Sin(DegToRad(angle)) * radius);
-            float y = (float)(center.Y + Math.Cos(DegToRad(angle)) * radius);
-            return new Vector2(x, y);
         }
         public float ClosestDistanceToFlagEdge(Vector2 p)
         {

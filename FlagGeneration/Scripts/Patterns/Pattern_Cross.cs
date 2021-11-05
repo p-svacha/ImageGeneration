@@ -120,7 +120,7 @@ namespace FlagGeneration
             HasStraightModifiedLines = R.NextDouble() < STRAIGHT_MODIFIED_LINES_CHANCE;
             HasDiagonalModifiedLines = R.NextDouble() < DIAGONAL_MODIFIED_LINES_CHANCE;
             LineModifier = GetWeightedRandomEnum<LineModifierType>(LineModifiers);
-            NumModifyRepeats = RandomRange(MIN_MODIFY_REPEATS, MAX_MODIFY_REPEATS + 1);
+            NumModifyRepeats = RandomRange(MIN_MODIFY_REPEATS, MAX_MODIFY_REPEATS);
             ModifierSize = RandomRange(MIN_MODIFIER_SIZE, MAX_MODIFIER_SIZE);
 
             if (HasCenterCircle)
@@ -192,24 +192,7 @@ namespace FlagGeneration
                     break;
             }
 
-            if (HasCenterCircleCoa)
-            {
-                CoatOfArmsPosition = CrossCenter;
-                float coaMinSize = CenterCircleRadius * 1f;
-                float coaMaxSize = CenterCircleRadius * 1.7f;
-                if(HasInnerCross)
-                {
-                    coaMinSize = (CenterCircleRadius - (CrossWidth - InnerCrossWidth) / 2) * 1f;
-                    coaMaxSize = (CenterCircleRadius - (CrossWidth - InnerCrossWidth) / 2) * 1.7f;
-                }
-                CoatOfArmsSize = RandomRange(coaMinSize, coaMaxSize);
-                List<Color> candidateColors = new List<Color>() { BackgroundColor };
-                if (HasTwoBackgroundColors) candidateColors.Add(BackgroundColor2);
-                if (HasInnerCross) candidateColors.Add(CrossColor);
-                if (HasInnerCross && candidateColors.Contains(InnerCrossColor)) candidateColors.Remove(InnerCrossColor);
-                CoatOfArmsPrimaryColor = candidateColors[R.Next(0, candidateColors.Count)];
-                ApplyCoatOfArms(Svg);
-            }
+            DrawCoatOfArms();
         }
 
         private void DrawNordic()
@@ -228,18 +211,6 @@ namespace FlagGeneration
             DrawCenterCircle();
             DrawInnerHorizontalLine();
             DrawInnerVerticalLine();
-
-            if (!HasCenterCircle && R.NextDouble() < NORDIC_CORNER_COA_CHANCE)
-            {
-                HasCenterCircleCoa = false;
-                List<Color> candidateColors = new List<Color>() { CrossColor };
-                if (HasTwoBackgroundColors) candidateColors.Add(BackgroundColor2);
-                if (HasInnerCross) candidateColors.Add(InnerCrossColor);
-                CoatOfArmsPrimaryColor = candidateColors[R.Next(0, candidateColors.Count)];
-                CoatOfArmsPosition = new Vector2((CrossCenter.X - CrossWidth / 2) * 0.5f, (CrossCenter.Y - CrossWidth / 2) * 0.5f);
-                CoatOfArmsSize = FlagHeight * 0.3f;
-                ApplyCoatOfArms(Svg);
-            }
         }
         private void DrawEngland()
         {
@@ -595,6 +566,28 @@ namespace FlagGeneration
                 DrawCenterCircle();
                 DrawInnerDiag1();
                 DrawInnerDiag2();
+            }
+        }
+
+        private void DrawCoatOfArms()
+        {
+            if (HasCenterCircleCoa)
+            {
+                CoatOfArmsPosition = CrossCenter;
+                float coaMinSize = CenterCircleRadius * 1f;
+                float coaMaxSize = CenterCircleRadius * 1.7f;
+                if (HasInnerCross)
+                {
+                    coaMinSize = (CenterCircleRadius - (CrossWidth - InnerCrossWidth) / 2) * 1f;
+                    coaMaxSize = (CenterCircleRadius - (CrossWidth - InnerCrossWidth) / 2) * 1.7f;
+                }
+                CoatOfArmsSize = RandomRange(coaMinSize, coaMaxSize);
+                List<Color> candidateColors = new List<Color>() { BackgroundColor };
+                if (HasTwoBackgroundColors) candidateColors.Add(BackgroundColor2);
+                if (HasInnerCross) candidateColors.Add(CrossColor);
+                if (HasInnerCross && candidateColors.Contains(InnerCrossColor)) candidateColors.Remove(InnerCrossColor);
+                CoatOfArmsPrimaryColor = candidateColors[R.Next(0, candidateColors.Count)];
+                ApplyCoatOfArms(Svg);
             }
         }
 
