@@ -26,8 +26,8 @@ The generator requires 4 parameters (in this order):
 - format: Must be "svg" or "png". The format of the generated image files.
 
 Example:
-To generate a single flag as a png with the seed 1312, run the command line with: "FlagGeneration.exe C:\MyGeneratedFlags s 1312 png"
-To generate 10 random flags as svg's, run the command line with: "FlagGeneration.exe C:\MyGeneratedFlags m 10 svg"
+- To generate a single flag as a png with the seed 1312, run the command line with: "FlagGeneration.exe C:\MyGeneratedFlags s 1312 png"
+- To generate 10 random flags as svg's, run the command line with: "FlagGeneration.exe C:\MyGeneratedFlags m 10 svg"
 
 
 # Mandala Generator
@@ -35,7 +35,6 @@ A generator to create mandalas. It is a windowed application. So to try it, simp
 
 ## Example Outputs
 Here are some example outputs.
-
 <br/><img src="Screenshots/exampleMandala1.png" alt="exampleMandala1" height="300" />
 <img src="Screenshots/exampleMandala2.png" alt="exampleMandala2" height="300" />
 <img src="Screenshots/exampleMandala3.png" alt="exampleMandala3" height="300" />
