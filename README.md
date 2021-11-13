@@ -36,6 +36,6 @@ A generator to create mandalas. It is a windowed application. So to try it, simp
 ## Example Outputs
 Here are some example outputs.
 
-<br/><img src="Screenshots/exampleMandala1.png" alt="exampleMandala1" height="200" />
-<img src="Screenshots/exampleMandala2.png" alt="exampleMandala2" height="200" />
-<img src="Screenshots/exampleMandala3.png" alt="exampleMandala3" height="200" />
+<br/><img src="Screenshots/exampleMandala1.png" alt="exampleMandala1" height="300" />
+<img src="Screenshots/exampleMandala2.png" alt="exampleMandala2" height="300" />
+<img src="Screenshots/exampleMandala3.png" alt="exampleMandala3" height="300" />
