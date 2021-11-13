@@ -12,7 +12,7 @@ namespace FlagGeneration
 {
     /// <summary>
     /// This program generates flag images.
-    /// It has to be run via console with 3 parameters:
+    /// It has to be run via console with 4 parameters:
     /// 1. param: directory
     ///     decides where the files will be saved
     /// 2. param: "s" or "m"
